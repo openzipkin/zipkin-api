@@ -1,0 +1,267 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: Zipkin API
+  description: |
+    Zipkin's Query api is rooted at `api/v1`, on a host that by default listens
+    on port 9411. It primarily serves zipkin-web, although it includes a POST
+    endpoint that can receive spans.
+host: localhost:9411
+basePath: /api/v1
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /services:
+    get:
+      description: |
+        Returns a list of all service names associated with annotations.
+      responses:
+        200:
+          description: Succes
+          schema:
+            type: array
+            items:
+              type: string
+        400:
+          description: Bad Request Error
+  /spans:
+    get:
+      description: Get all the span names logged by a particular service
+      parameters:
+      - name: serviceName
+        in: query
+        required: true
+        description: |
+          Ex zipkin-web (required) - service that logged an annotation in the
+          span.
+        type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              type: string
+        400:
+          description: Bad Request Error
+    post:
+      description: Uploads a list of spans encoded per content-type
+      consumes:
+        - application/json
+        - application/x-thrift
+      produces: []
+      parameters:
+        - name: span
+          in: body
+          description: A list of spans
+          required: true
+          schema:
+            $ref: "#/definitions/ListOfSpans"
+      responses:
+        202:
+          description: Created
+  /traces:
+    get:
+      description: |
+          Invoking this request retrieves traces matching the below filters.
+
+          Results should be filtered against endTs, subject to limit and
+          lookback. For example, if endTs is 10:20 today, limit is 10, and
+          lookback is 7 days, traces returned should be those nearest to 10:20
+          today, not 10:20 a week ago.
+
+          Time units of endTs and lookback are milliseconds as opposed to
+          microseconds, the grain of Span.timestamp. Milliseconds is a more
+          familiar and supported granularity for query, index and windowing
+          functions
+      parameters:
+        - name: serviceName
+          in: query
+          required: true
+          description: service name
+          type: string
+        - name: annotationQuery
+          in: query
+          type: string
+          required: false
+          description: |
+             Ex. `http.uri=/foo and retried` - If key/value (has an `=`),
+             constrains against Span.binaryAnnotations of time string. If just
+             a word, constrains against Span.annotations. Any values are AND
+             against eachother. This means a span in the trace must match all of
+             these.
+        - name: minDuration
+          in: query
+          type: integer
+          description: |
+             Ex. 100000 (for 100ms). Only return traces whose `Span.duration` is
+             greater than or equal to minDuration microseconds.
+        - name: maxDuration
+          in: query
+          type: integer
+          description: |
+            Only return traces whose Span.duration is less than or equal to
+            `maxDuration` microseconds. Only valid with minDuration.
+        - name: endTs
+          in: query
+          type: string
+          description: |
+            Only return traces where all Span.timestamp are at or before this
+            time in epoch milliseconds. Defaults to current time.
+        - name: lookback
+          type: string
+          in: query
+          description: |
+            Only return traces where all  Span.timestamp are at or after (endTs
+            - * lookback) in milliseconds. Defaults to endTs, limited to a
+            system parameter QUERY_LOOKBACK
+
+        - name: limit
+          in: query
+          default: 10
+          type: integer
+          description: |
+            Maximum number of traces to return. Defaults to 10
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ListOfTraces"
+  /trace/{traceId}:
+    parameters:
+      - name: traceId
+        in: path
+        required: true
+        description: the 64-bit hex-encoded id of the trace as a path parameter.
+        type: string
+    get:
+      responses:
+        200:
+          description: OK
+          schema:
+            description: An array of spans
+            type: array
+            items:
+              $ref: "#/definitions/Trace"
+        404:
+           description: "`traceId` not found"
+  /dependencies:
+    get:
+      description: |
+        Returns dependency links derived from spans.
+
+        Span names are in lowercase, rpc method for example. Conventionally,
+        when the span name isn't known, name = "unknown".
+      parameters:
+        - name: endTs
+          in: query
+          description: |
+            only return links from spans where `Span.timestamp`  are at or before
+            this time in epoch milliseconds.
+          required: true
+          type: integer
+        - name: loopback
+          in: query
+          description: |
+            only return links where all Span.timestamp are at or after 
+            (`endTs - * lookback`) in milliseconds. Defaults to `endTs`, limited 
+            to a system parameter `QUERY_LOOKBACK`
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            title: ListOfDependencyLinks
+            items:
+              $ref: "#/definitions/DependencyLink"
+definitions:
+  Endpoint:
+    type: object
+    title: Endpoint
+    properties:
+      serviceName:
+        type: string
+      ipv4:
+        type: string
+      port:
+        type: integer
+  Annotation:
+    title: Annotation
+    type: object
+    properties:
+      endpoint:
+        $ref: "#/definitions/Endpoint"
+      timestamp:
+        type: integer
+      value:
+        type: string
+  BinaryAnnotation:
+    title: BinaryAnnotation
+    type: object
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+      endpoint:
+        $ref: '#/definitions/Endpoint'
+  ListOfSpans:
+    title: ListOfSpans
+    description: 'A list of spans with possibly different trace ids, in no particular order'
+    type: array
+    items:
+      $ref: "#/definitions/Span"
+  Trace:
+    title: Trace
+    type: array
+    description: 'List of spans who have the same trace id. Spans in the trace, and annotations in a span are sorted ascending by timestamp. ie first event should be first in the spans list.'
+    items:
+      $ref: "#/definitions/Span"
+  ListOfTraces:
+    title: ListOfTraces
+    type: array
+    items:
+      $ref: "#/definitions/Trace"
+  Span:
+    title: Span
+    type: object
+    properties:
+      traceId:
+        type: string
+      name:
+        type: string
+      id:
+        type: string
+      timestamp:
+        type: integer
+        format: int64
+      duration:
+        type: integer
+      debug:
+        type: boolean
+      annotations:
+        title: ListOfAnnotations
+        type: array
+        items:
+          $ref: '#/definitions/Annotation'
+      binaryAnnotations:
+        title: ListOfBinaryAnnotations
+        type: array
+        items:
+          $ref: '#/definitions/BinaryAnnotation'
+  DependencyLink:
+    title: DependencyLink
+    type: object
+    properties:
+      parent:
+        type: string
+      child:
+        type: string
+      callCount:
+        type: integer
