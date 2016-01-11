@@ -1,0 +1,27 @@
+{
+  "name": "zipkin-api",
+  "version": "0.0.0",
+  "description": "Zipkin API ",
+  "main": "validate.js",
+  "scripts": {
+    "test": "node validate.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openzipkin/zipkin-api.git"
+  },
+  "keywords": [
+    "zipkin",
+    "api"
+  ],
+  "author": "",
+  "license": "ASL",
+  "bugs": {
+    "url": "https://github.com/openzipkin/zipkin-api/issues"
+  },
+  "homepage": "https://github.com/openzipkin/zipkin-api#readme",
+  "devDependencies": {
+    "swagger-tools": "^0.9.10",
+    "js-yaml": "^3.5.1"
+  }
+}
