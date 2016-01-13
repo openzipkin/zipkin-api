@@ -15,7 +15,7 @@
     "api"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "ASL",
   "bugs": {
     "url": "https://github.com/openzipkin/zipkin-api/issues"
   },

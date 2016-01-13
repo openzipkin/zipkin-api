@@ -1,0 +1,3 @@
+{
+  "loadSwaggerFrom": "./zipkin-api.yaml"
+}
