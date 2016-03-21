@@ -50,7 +50,9 @@ paths:
         400:
           description: Bad Request Error
     post:
-      description: Uploads a list of spans encoded per content-type
+      description: |
+          Uploads a list of spans encoded per content-type, for example json
+          or thrift (TBinaryProtocol big-endian).
       consumes:
         - application/json
         - application/x-thrift
@@ -58,7 +60,7 @@ paths:
       parameters:
         - name: span
           in: body
-          description: A list of spans
+          description: A list of spans that belong to any trace.
           required: true
           schema:
             $ref: "#/definitions/ListOfSpans"
@@ -120,7 +122,6 @@ paths:
             Only return traces where all  Span.timestamp are at or after (endTs
             - * lookback) in milliseconds. Defaults to endTs, limited to a
             system parameter QUERY_LOOKBACK
-
         - name: limit
           in: query
           default: 10
@@ -139,12 +140,25 @@ paths:
         required: true
         description: the 64-bit hex-encoded id of the trace as a path parameter.
         type: string
+      - name: raw
+        in: query
+        required: false
+        description: |
+          Note this flag has no value. Ex. /trace/{traceId}?raw
+
+          Normally, the trace endpoint cleans trace data. For example, it merges
+          spans by id, adds missing timestamp or duration, corrects clock skew..
+
+          Specifying this flag is a debug case, when you are debugging zipkin
+          logic or zipkin instrumentation, and want to see the input to these
+          adjusters. For example, this might explain or rule out clock skew.
+        type: boolean
     get:
       responses:
         200:
           description: OK
           schema:
-            description: An array of spans
+            description: An array of spans that share the same trace id
             type: array
             items:
               $ref: "#/definitions/Trace"
