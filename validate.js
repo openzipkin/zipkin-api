@@ -1,20 +1,23 @@
 'use strict';
 
-const SwaggerTools = require('swagger-tools');
+const Sway = require('sway');
 const read = require('fs').readFileSync;
 const load = require('js-yaml').load;
 const zipkinAPI = read('./zipkin-api.yaml').toString();
 
-SwaggerTools.specs.v2.validate(load(zipkinAPI), (error, result)=> {
-  if (error) {
-    console.error(error);
-    process.exit(1);
-  }
-  
-  if (result.warnings && result.warnings.length) {
-    console.log('Found warnings: ');
-    console.log(result.warnings);
-  } 
+Sway.create(load(zipkinAPI), api=> {
+  const result = api.validate();
 
-  console.log('Spec is valid');
+  if (result.errors.length) {
+    console.error('Validation failed.')
+    console.error(JSON.stringify(result.errors));
+    return;
+  }
+
+  if (result.warnings.length) {
+    console.warn('Warnings:')
+    console.warn(JSON.stringify(result.warnings));
+  }
+
+  console.log('Validation passed');
 });
