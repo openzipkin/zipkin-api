@@ -168,8 +168,8 @@ paths:
         - name: loopback
           in: query
           description: |
-            only return links where all Span.timestamp are at or after 
-            (`endTs - * lookback`) in milliseconds. Defaults to `endTs`, limited 
+            only return links where all Span.timestamp are at or after
+            (`endTs - * lookback`) in milliseconds. Defaults to `endTs`, limited
             to a system parameter `QUERY_LOOKBACK`
           type: string
       responses:
