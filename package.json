@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/openzipkin/zipkin-api#readme",
   "devDependencies": {
-    "swagger-tools": "^0.9.10",
-    "js-yaml": "^3.5.1"
+    "js-yaml": "^3.5.1",
+    "sway": "^0.6.0"
   }
 }
