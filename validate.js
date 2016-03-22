@@ -5,7 +5,7 @@ const read = require('fs').readFileSync;
 const load = require('js-yaml').load;
 const zipkinAPI = read('./zipkin-api.yaml').toString();
 
-Sway.create(load(zipkinAPI), api=> {
+Sway.create({definition: load(zipkinAPI)}).then(api => {
   const result = api.validate();
 
   if (result.errors.length) {
@@ -20,4 +20,8 @@ Sway.create(load(zipkinAPI), api=> {
   }
 
   console.log('Validation passed');
+})
+.catch(error=> {
+  console.error('Error loading API');
+  console.error(error);
 });
