@@ -159,9 +159,7 @@ paths:
           description: OK
           schema:
             description: An array of spans that share the same trace id
-            type: array
-            items:
-              $ref: "#/definitions/Trace"
+            $ref: "#/definitions/Trace"
         404:
            description: "`traceId` not found"
   /dependencies:
