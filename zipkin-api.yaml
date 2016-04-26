@@ -4,7 +4,7 @@ info:
   title: Zipkin API
   description: |
     Zipkin's Query api is rooted at `api/v1`, on a host that by default listens
-    on port 9411. It primarily serves zipkin-web, although it includes a POST
+    on port 9411. It primarily serves the zipkin-ui, although it includes a POST
     endpoint that can receive spans.
 host: localhost:9411
 basePath: /api/v1
@@ -37,8 +37,8 @@ paths:
         in: query
         required: true
         description: |
-          Ex zipkin-web (required) - service that logged an annotation in the
-          span.
+          Ex zipkin-server (required) - service that logged an annotation in a
+          trace. The /services endpoint enumerates possible input values.
         type: string
       responses:
         200:
@@ -85,7 +85,9 @@ paths:
         - name: serviceName
           in: query
           required: true
-          description: service name
+          description: |
+            Ex zipkin-server (required) - service that logged an annotation in a
+            trace. The /services endpoint enumerates possible input values.
           type: string
         - name: annotationQuery
           in: query
