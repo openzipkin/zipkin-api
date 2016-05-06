@@ -84,10 +84,11 @@ paths:
       parameters:
         - name: serviceName
           in: query
-          required: true
+          required: false
           description: |
-            Ex zipkin-server (required) - service that logged an annotation in a
-            trace. The /services endpoint enumerates possible input values.
+            Ex zipkin-server - service that logged an annotation in a trace.
+            Required when constraining on parameters except time and duration.
+            The /services endpoint enumerates possible input values.
           type: string
         - name: annotationQuery
           in: query
