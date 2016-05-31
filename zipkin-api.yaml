@@ -137,26 +137,26 @@ paths:
           schema:
             $ref: "#/definitions/ListOfTraces"
   /trace/{traceId}:
-    parameters:
-      - name: traceId
-        in: path
-        required: true
-        description: the 64-bit hex-encoded id of the trace as a path parameter.
-        type: string
-      - name: raw
-        in: query
-        required: false
-        description: |
-          Note this flag has no value. Ex. /trace/{traceId}?raw
-
-          Normally, the trace endpoint cleans trace data. For example, it merges
-          spans by id, adds missing timestamp or duration, corrects clock skew..
-
-          Specifying this flag is a debug case, when you are debugging zipkin
-          logic or zipkin instrumentation, and want to see the input to these
-          adjusters. For example, this might explain or rule out clock skew.
-        type: boolean
     get:
+      parameters:
+        - name: traceId
+          in: path
+          required: true
+          description: the 64-bit hex-encoded id of the trace as a path parameter.
+          type: string
+        - name: raw
+          in: query
+          required: false
+          description: |
+            Note this flag has no value. Ex. /trace/{traceId}?raw
+
+            Normally, the trace endpoint cleans trace data. For example, it merges
+            spans by id, adds missing timestamp or duration, corrects clock skew..
+
+            Specifying this flag is a debug case, when you are debugging zipkin
+            logic or zipkin instrumentation, and want to see the input to these
+            adjusters. For example, this might explain or rule out clock skew.
+          type: boolean
       responses:
         200:
           description: OK
