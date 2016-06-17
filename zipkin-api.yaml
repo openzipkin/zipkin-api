@@ -248,17 +248,30 @@ definitions:
     properties:
       traceId:
         type: string
+        description: 'Randomly generated globally unique transaction/context id'
       name:
         type: string
+        description: 'RPC name'
+      parentId:
+        type: string
+        maxLength: 16
+        minLength: 16
+        description: 'Parent span id (16 digit hex value)'
       id:
         type: string
+        maxLength: 16
+        minLength: 16
+        description: 'Id of current span (16 digit hex value)'
       timestamp:
         type: integer
         format: int64
+        description: 'Start time of span as UNIX timestamp in **milliseconds**'
       duration:
         type: integer
+        description: 'Duration of span in **milliseconds**'
       debug:
         type: boolean
+        description: 'Indicator whether this trace was sampled from standard traffic or forced.  Usually coupled to the X-B3-Flags header'
       annotations:
         title: ListOfAnnotations
         type: array
