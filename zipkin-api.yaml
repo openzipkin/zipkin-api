@@ -248,17 +248,33 @@ definitions:
     properties:
       traceId:
         type: string
+        maxLength: 16
+        minLength: 16
+        description: 'Randomly generated, unique for a trace, set on all spans within it. 8-byte identifier encoded as 16 lowercase hex characters'
       name:
         type: string
+        description: 'Span name in lowercase (e.g. rpc method)'
+      parentId:
+        type: string
+        maxLength: 16
+        minLength: 16
+        description: 'Parent span id. 8-byte identifier encoded as 16 lowercase hex characters.  Can be ommitted or set to nil if span is the root span of a trace.'
       id:
         type: string
+        maxLength: 16
+        minLength: 16
+        description: 'Id of current span, unique in context of traceId.  8-byte identifier encoded as 16 lowercase hex characters.'
       timestamp:
         type: integer
         format: int64
+        description: 'Epoch **microseconds** of the start of this span, possibly absent if this an incomplete span.'
       duration:
         type: integer
+        format: int64
+        description: 'Duration in **microseconds** of the critical path, if known.'
       debug:
         type: boolean
+        description: 'Indicator whether this trace was sampled from standard traffic or forced.  Usually coupled to the X-B3-Flags header, which when set to true is a request to store this span even if it overrides sampling policy.'
       annotations:
         title: ListOfAnnotations
         type: array
