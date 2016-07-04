@@ -170,7 +170,6 @@ const string HTTP_REQUEST_SIZE = "http.request.size"
  */
 const string HTTP_RESPONSE_SIZE = "http.response.size"
 
-
 /**
  * The value of "lc" is the component or namespace of a local span.
  *
@@ -197,6 +196,26 @@ const string HTTP_RESPONSE_SIZE = "http.response.size"
  * "bootstrap" where "lc=finch"
  */
 const string LOCAL_COMPONENT = "lc"
+
+#***** Annotation.value or BinaryAnnotation.key ******
+/**
+ * When an annotation value, this indicates when an error occurred. When a
+ * binary annotation key, the value is a human readable message associated
+ * with an error.
+ *
+ * Due to transient errors, an ERROR annotation should not be interpreted
+ * as a span failure, even the annotation might explain additional latency.
+ * Instrumentation should add the ERROR binary annotation when the operation
+ * failed and couldn't be recovered.
+ *
+ * Here's an example: A span has an ERROR annotation, added when a WIRE_SEND
+ * failed. Another WIRE_SEND succeeded, so there's no ERROR binary annotation
+ * on the span because the overall operation succeeded.
+ *
+ * Note that RPC spans often include both client and server hosts: It is
+ * possible that only one side perceived the error.
+ */
+const string ERROR = "error"
 
 #***** BinaryAnnotation.key where value = [1] and annotation_type = BOOL ******
 /**
