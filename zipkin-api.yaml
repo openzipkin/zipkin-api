@@ -271,7 +271,7 @@ definitions:
       duration:
         type: integer
         format: int64
-        description: 'Duration in **microseconds** of the critical path, if known.'
+        description: 'Duration in **microseconds** of the critical path, if known. Durations of less than one are rounded up.'
       debug:
         type: boolean
         description: 'Indicator whether this trace was sampled from standard traffic or forced.  Usually coupled to the X-B3-Flags header, which when set to true is a request to store this span even if it overrides sampling policy.'

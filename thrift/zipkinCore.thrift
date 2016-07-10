@@ -432,7 +432,8 @@ struct Span {
    */
   10: optional i64 timestamp,
   /**
-   * Measurement in microseconds of the critical path, if known.
+   * Measurement in microseconds of the critical path, if known. Durations of
+   * less than one microsecond must be rounded up to 1 microsecond.
    *
    * This value should be set directly, as opposed to implicitly via annotation
    * timestamps. Doing so encourages precision decoupled from problems of
