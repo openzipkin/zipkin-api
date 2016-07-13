@@ -270,6 +270,10 @@ struct Endpoint {
    * better label based on binary annotations, such as user agent.
    */
   3: string service_name
+  /**
+   * IPv6 host address packed into 16 bytes. Ex Inet6Address.getBytes()
+   */
+  4: optional binary ipv6
 }
 
 /**
