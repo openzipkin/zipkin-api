@@ -201,8 +201,13 @@ definitions:
     properties:
       serviceName:
         type: string
+        description: 'Classifier of this endpoint in lowercase, such as "acme-frontend"'
       ipv4:
         type: string
+        description: 'The text representation of a IPv4 address associated with this endpoint. Ex. 192.168.99.100'
+      ipv6:
+        type: string
+        description: 'The text representation of a IPv6 address associated with this endpoint. Ex. 2001:db8::c001'
       port:
         type: integer
   Annotation:
@@ -211,6 +216,7 @@ definitions:
     properties:
       endpoint:
         $ref: "#/definitions/Endpoint"
+        description: 'The host that recorded the value, primarily for query by service name.'
       timestamp:
         type: integer
       value:
@@ -225,6 +231,7 @@ definitions:
         type: string
       endpoint:
         $ref: '#/definitions/Endpoint'
+        description: 'The host that recorded the value, primarily for query by service name.'
   ListOfSpans:
     title: ListOfSpans
     description: 'A list of spans with possibly different trace ids, in no particular order'
