@@ -286,7 +286,7 @@ struct Annotation {
    * Microseconds from epoch.
    *
    * This value should use the most precise value possible. For example,
-   * gettimeofday or syncing nanoTime against a tick of currentTimeMillis.
+   * gettimeofday or multiplying currentTimeMillis by 1000.
    */
   1: i64 timestamp
   /**
