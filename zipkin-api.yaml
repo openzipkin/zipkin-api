@@ -268,9 +268,9 @@ definitions:
         description: 'Parent span id. 8-byte identifier encoded as 16 lowercase hex characters.  Can be ommitted or set to nil if span is the root span of a trace.'
       id:
         type: string
-        maxLength: 16
+        maxLength: 32
         minLength: 16
-        description: 'Id of current span, unique in context of traceId.  8-byte identifier encoded as 16 lowercase hex characters.'
+        description: 'Id of current span, unique in context of traceId. 8-byte or 16-byte identifier respectively encoded as 16 or 32 lowercase hex characters.'
       timestamp:
         type: integer
         format: int64
