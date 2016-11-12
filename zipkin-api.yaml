@@ -90,6 +90,13 @@ paths:
             Required when constraining on parameters except time and duration.
             The /services endpoint enumerates possible input values.
           type: string
+        - name: spanName
+          in: query
+          required: false
+          description: |
+            Ex my_span_name - name of a span in a trace.
+            Only return traces that contains spans with this name.
+          type: string
         - name: annotationQuery
           in: query
           type: string
