@@ -149,7 +149,7 @@ paths:
         - name: traceId
           in: path
           required: true
-          description: the 64-bit hex-encoded id of the trace as a path parameter.
+          description: the 64 or 128-bit hex-encoded id of the trace as a path parameter.
           type: string
         - name: raw
           in: query
