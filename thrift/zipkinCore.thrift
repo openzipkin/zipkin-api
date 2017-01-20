@@ -75,6 +75,24 @@ const string SERVER_SEND = "ss"
  */
 const string SERVER_RECV = "sr"
 /**
+ * Message sent ("ms") is a one-way message production, usually to a broker.
+ * There is only one send per span. For example, if there's a transport error,
+ * each attempt by the producer can be added as a WIRE_SEND annotation.
+ *
+ * Annotation.host is not the broker. It is the host which produced the message.
+ * When annotating MESSAGE_SEND, indicate the broker with MESSAGE_ADDR.
+ */
+const string MESSAGE_SEND = "ms"
+/**
+ * Message received ("mr") is a one-way message consumption, usually from a
+ * broker. There is only one receive per span. For example, if duplicate
+ * messages were received, each can be added as a WIRE_RECV annotation.
+ *
+ * Annotation.host is not the broker. It is the host which produced the message.
+ * When annotating MESSAGE_RECV, indicate the broker with MESSAGE_ADDR.
+ */
+const string MESSAGE_RECV = "mr"
+/**
  * Optionally logs an attempt to send a message on the wire. Multiple wire send
  * events could indicate network retries. A lag between client or server send
  * and wire send might indicate queuing or processing delay.
@@ -230,6 +248,12 @@ const string CLIENT_ADDR = "ca"
  * different server ip or port.
  */
 const string SERVER_ADDR = "sa"
+/**
+ * Indicates a message address ("ma") in a span. Concretely, this is the broker
+ * that propagated the message sent by a producer (MESSAGE_SEND) to its ultimate
+ * consumer (MESSAGE_RECV). For example, this could be a Kafka broker.
+ */
+const string MESSAGE_ADDR = "ma"
 
 /**
  * Indicates the network context of a service recording an annotation with two
