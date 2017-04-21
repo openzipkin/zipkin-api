@@ -121,12 +121,12 @@ paths:
             `maxDuration` microseconds. Only valid with minDuration.
         - name: endTs
           in: query
-          type: string
+          type: int64
           description: |
             Only return traces where all Span.timestamp are at or before this
             time in epoch milliseconds. Defaults to current time.
         - name: lookback
-          type: string
+          type: int64
           in: query
           description: |
             Only return traces where all  Span.timestamp are at or after (endTs
@@ -185,14 +185,14 @@ paths:
             only return links from spans where `Span.timestamp`  are at or before
             this time in epoch milliseconds.
           required: true
-          type: integer
-        - name: loopback
+          type: int64
+        - name: lookback
           in: query
           description: |
             only return links where all Span.timestamp are at or after
             (`endTs - * lookback`) in milliseconds. Defaults to `endTs`, limited
             to a system parameter `QUERY_LOOKBACK`
-          type: string
+          type: int64
       responses:
         200:
           description: OK
