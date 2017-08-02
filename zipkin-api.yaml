@@ -313,3 +313,5 @@ definitions:
         type: string
       callCount:
         type: integer
+      errorCount:
+        type: integer
