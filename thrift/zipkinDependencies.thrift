@@ -21,8 +21,10 @@ struct DependencyLink {
   /** child service name (callee) */
   2: string child
   # 3: Moments OBSOLETE_duration_moments
-  /** calls made during the duration of this link */
+  /** total traced calls made from parent to child */
   4: i64 callCount
+  /** how many calls are known to be errors */
+  5: i64 errorCount
   # histogram?
 }
 
