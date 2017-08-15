@@ -3,25 +3,29 @@
 const Sway = require('sway');
 const read = require('fs').readFileSync;
 const load = require('js-yaml').load;
-const zipkinAPI = read('./zipkin-api.yaml').toString();
+const yamls = ['./zipkin-api.yaml', './zipkin2-api.yaml'];
 
-Sway.create({definition: load(zipkinAPI)}).then(api => {
-  const result = api.validate();
+yamls.forEach(yaml => {
+  const zipkinAPI = read(yaml).toString();
 
-  if (result.errors.length) {
-    console.error('Validation failed.')
-    console.error(JSON.stringify(result.errors));
-    return;
-  }
+  Sway.create({definition: load(zipkinAPI)}).then(api => {
+    const result = api.validate();
 
-  if (result.warnings.length) {
-    console.warn('Warnings:')
-    console.warn(JSON.stringify(result.warnings));
-  }
+    if (result.errors.length) {
+      console.error(`Validation failed for ${yaml}`)
+      console.error(JSON.stringify(result.errors));
+      return;
+    }
 
-  console.log('Validation passed');
-})
-.catch(error=> {
-  console.error('Error loading API');
-  console.error(error);
+    if (result.warnings.length) {
+      console.warn(`Warnings in ${yaml}:`)
+      console.warn(JSON.stringify(result.warnings));
+    }
+
+    console.log(`Validation of ${yaml} passed`);
+  })
+  .catch(error=> {
+    console.error(`Error loading ${yaml}`);
+    console.error(error);
+  });
 });
