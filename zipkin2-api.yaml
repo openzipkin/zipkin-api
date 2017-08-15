@@ -1,0 +1,219 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: Zipkin API
+  description: |
+    Zipkin's v2 api currently includes a POST endpoint that can receive spans.
+host: localhost:9411
+basePath: /api/v2
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+paths:
+  /spans:
+    post:
+      description: |
+          Uploads a list of spans encoded per content-type, for example json.
+      consumes:
+        - application/json
+      produces: []
+      parameters:
+        - name: spans
+          in: body
+          description: A list of spans that belong to any trace.
+          required: true
+          schema:
+            $ref: "#/definitions/ListOfSpans"
+      responses:
+        202:
+          description: Accepted
+definitions:
+  Endpoint:
+    type: object
+    title: Endpoint
+    description: The network context of a node in the service graph
+    properties:
+      serviceName:
+        type: string
+        description: |
+                    Lower-case label of this node in the service graph, such as "favstar". Leave
+                    absent if unknown.
+                    
+                    This is a primary label for trace lookup and aggregation, so it should be
+                    intuitive and consistent. Many use a name from service discovery.
+      ipv4:
+        type: string
+        description: |
+                    The text representation of the primary IPv4 address associated with this
+                    a connection. Ex. 192.168.99.100 Absent if unknown.
+      ipv6:
+        type: string
+        description: |
+                    The text representation of the primary IPv6 address associated with this
+                    a connection. Ex. 2001:db8::c001 Absent if unknown.
+                    
+                    Prefer using the ipv4 field for mapped addresses.
+      port:
+        type: integer
+        description: |
+                    Depending on context, this could be a listen port or the client-side of a
+                    socket. Absent if unknown
+  Annotation:
+    title: Annotation
+    type: object
+    description: |
+                Associates an event that explains latency with a timestamp.
+                Unlike log statements, annotations are often codes. Ex. "ws" for WireSend
+                
+                Zipkin v1 core annotations such as "cs" and "sr" have been replaced with
+                Span.Kind, which interprets timestamp and duration.
+    properties:
+      timestamp:
+        type: integer
+        description: |
+                    Epoch **microseconds** of this event.
+                    
+                    For example, 1502787600000000 corresponds to 2017-08-15 09:00 UTC
+                    
+                    This value should be set directly by instrumentation, using the most precise
+                    value possible. For example, gettimeofday or multiplying epoch millis by 1000.
+      value:
+        type: string
+        description: |
+                  Usually a short tag indicating an event, like "error"
+                  
+                  While possible to add larger data, such as garbage collection details, low
+                  cardinality event names both keep the size of spans down and also are easy
+                  to search against.
+  Tags:
+    type: object
+    title: Tags
+    description: |
+                Adds context to a span, for search, viewing and analysis.
+                
+                For example, a key "your_app.version" would let you lookup traces by version.
+                A tag "sql.query" isn't searchable, but it can help in debugging when viewing
+                a trace.
+    additionalProperties:
+      type: string
+  ListOfSpans:
+    title: ListOfSpans
+    description: 'A list of spans with possibly different trace ids, in no particular order'
+    type: array
+    items:
+      $ref: "#/definitions/Span"
+  Span:
+    title: Span
+    type: object
+    properties:
+      traceId:
+        type: string
+        maxLength: 32
+        minLength: 16
+        description: |
+                    Randomly generated, unique identifier for a trace, set on all spans within it.
+                    
+                    Encoded as 16 or 32 lowercase hex characters corresponding to 64 or 128 bits.
+                    For example, a 128bit trace ID looks like 4e441824ec2b6a44ffdc9bb9a6453df3
+      name:
+        type: string
+        description: |
+                    The logical operation this span represents in lowercase (e.g. rpc method).
+                    Leave absent if unknown.
+                    
+                    As these are lookup labels, take care to ensure names are low cardinality.
+                    For example, do not embed variables into the name.
+      parentId:
+        type: string
+        maxLength: 16
+        minLength: 16
+        description: 'The parent span ID or absent if this the root span in a trace.'
+      id:
+        type: string
+        maxLength: 16
+        minLength: 16
+        description: |
+                    Unique 64bit identifier for this operation within the trace.
+                    
+                    Encoded as 16 lowercase hex characters. For example ffdc9bb9a6453df3
+      kind:
+        type: string
+        enum:
+          - CLIENT
+          - SERVER
+          - PRODUCER
+          - CONSUMER
+        description: |
+                    When present, clarifies timestamp, duration and remoteEndpoint. When
+                    absent, the span is local or incomplete.
+                    
+                    * `CLIENT`
+                      * timestamp - The moment a request was sent (formerly "cs")
+                      * duration - When present indicates when a response was received (formerly "cr")
+                      * remoteEndpoint - Represents the server. Leave serviceName absent if unknown.
+                    * `SERVER`
+                      * timestamp - The moment a request was received (formerly "sr")
+                      * duration - When present indicates when a response was sent (formerly "ss")
+                      * remoteEndpoint - Represents the client. Leave serviceName absent if unknown.
+                    * `PRODUCER`
+                      * timestamp - The moment a message was sent to a destination (formerly "ms")
+                      * duration - When present represents delay sending the message, such as batching.
+                      * remoteEndpoint - Represents the broker. Leave serviceName absent if unknown.
+                    * `CONSUMER`
+                      * timestamp - The moment a message was received from an origin (formerly "mr")
+                      * duration - When present represents delay consuming the message, such as from backlog.
+                      * remoteEndpoint - Represents the broker. Leave serviceName absent if unknown.
+      timestamp:
+        type: integer
+        format: int64
+        description: |
+                    Epoch **microseconds** of the start of this span, possibly absent if incomplete.
+                    
+                    For example, 1502787600000000 corresponds to 2017-08-15 09:00 UTC
+                    
+                    This value should be set directly by instrumentation, using the most precise
+                    value possible. For example, gettimeofday or multiplying epoch millis by 1000.
+                    
+                    There are three known edge-cases where this could be reported absent.
+                     * A span was allocated but never started (ex not yet received a timestamp)
+                     * The span's start event was lost
+                     * Data about a completed span (ex tags) were sent after the fact
+      duration:
+        type: integer
+        format: int64
+        description: |
+                    Duration in **microseconds** of the critical path, if known. Durations of less
+                    than one are rounded up.
+                    
+                    For example 150 milliseconds is 150000 microseconds.
+      debug:
+        type: boolean
+        description: |
+                    True is a request to store this span even if it overrides sampling policy.
+                    
+                    This is true when the `X-B3-Flags` header has a value of 1.
+      shared:
+        type: boolean
+        description: 'True if we are contributing to a span started by another tracer (ex on a different host).'
+      localEndpoint:
+        $ref: "#/definitions/Endpoint"
+        description: |
+                    The host that recorded this span, primarily for query by service name.
+                    
+                    Instrumentation should always record this. Usually, absent implies late data.
+                    The IP address corresponding to this is usually the site local or advertised
+                    service address. When present, the port indicates the listen port.
+      remoteEndpoint:
+        $ref: "#/definitions/Endpoint"
+        description: |
+                    When an RPC (or messaging) span, indicates the other side of the connection.
+      annotations:
+        type: array
+        items:
+          $ref: '#/definitions/Annotation'
+        description: 'Associates events that explain latency with the time they happened.'
+      tags:
+        $ref: '#/definitions/Tags'
+        description: 'Tags give your span context for search, viewing and analysis.'
