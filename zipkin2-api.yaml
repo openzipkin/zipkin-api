@@ -45,11 +45,13 @@ definitions:
                     intuitive and consistent. Many use a name from service discovery.
       ipv4:
         type: string
+        format: ipv4
         description: |
                     The text representation of the primary IPv4 address associated with this
                     a connection. Ex. 192.168.99.100 Absent if unknown.
       ipv6:
         type: string
+        format: ipv6
         description: |
                     The text representation of the primary IPv6 address associated with this
                     a connection. Ex. 2001:db8::c001 Absent if unknown.
@@ -107,11 +109,15 @@ definitions:
   Span:
     title: Span
     type: object
+    required:
+      - traceId
+      - id
     properties:
       traceId:
         type: string
         maxLength: 32
         minLength: 16
+        pattern: "[a-z0-9]{16,32}"
         description: |
                     Randomly generated, unique identifier for a trace, set on all spans within it.
                     
@@ -127,11 +133,13 @@ definitions:
                     For example, do not embed variables into the name.
       parentId:
         type: string
+        pattern: "[a-z0-9]{16}"
         maxLength: 16
         minLength: 16
         description: 'The parent span ID or absent if this the root span in a trace.'
       id:
         type: string
+        pattern: "[a-z0-9]{16}"
         maxLength: 16
         minLength: 16
         description: |
@@ -183,6 +191,7 @@ definitions:
       duration:
         type: integer
         format: int64
+        minimum: 1
         description: |
                     Duration in **microseconds** of the critical path, if known. Durations of less
                     than one are rounded up.
@@ -211,6 +220,7 @@ definitions:
                     When an RPC (or messaging) span, indicates the other side of the connection.
       annotations:
         type: array
+        uniqueItems: true
         items:
           $ref: '#/definitions/Annotation'
         description: 'Associates events that explain latency with the time they happened.'
