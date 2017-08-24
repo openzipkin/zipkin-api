@@ -155,7 +155,9 @@ definitions:
           - CONSUMER
         description: |
                     When present, clarifies timestamp, duration and remoteEndpoint. When
-                    absent, the span is local or incomplete.
+                    absent, the span is local or incomplete. Unlike client and server,
+                    there is no direct critical path latency relationship between producer
+                    and consumer spans.
                     
                     * `CLIENT`
                       * timestamp - The moment a request was sent (formerly "cs")
@@ -194,7 +196,8 @@ definitions:
         minimum: 1
         description: |
                     Duration in **microseconds** of the critical path, if known. Durations of less
-                    than one are rounded up.
+                    than one are rounded up. Duration of children can be longer than their parents
+                    due to asynchronous operations.
                     
                     For example 150 milliseconds is 150000 microseconds.
       debug:
