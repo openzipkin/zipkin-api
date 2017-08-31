@@ -12,7 +12,39 @@ schemes:
 consumes:
   - application/json
 paths:
+  /services:
+    get:
+      description: |
+        Returns a list of all service names associated with span endpoints.
+      responses:
+        200:
+          description: Succes
+          schema:
+            type: array
+            items:
+              type: string
+        400:
+          description: Bad Request Error
   /spans:
+    get:
+      description: Get all the span names recorded by a particular service
+      parameters:
+      - name: serviceName
+        in: query
+        required: true
+        description: |
+          Ex favstar (required) - Lower-case label of a node in the service
+          graph. The /services endpoint enumerates possible input values.
+        type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              type: string
+        400:
+          description: Bad Request Error  
     post:
       description: |
           Uploads a list of spans encoded per content-type, for example json.
@@ -29,6 +61,134 @@ paths:
       responses:
         202:
           description: Accepted
+  /traces:
+    get:
+      description: |
+          Invoking this request retrieves traces matching the below filters.
+
+          Results should be filtered against endTs, subject to limit and
+          lookback. For example, if endTs is 10:20 today, limit is 10, and
+          lookback is 7 days, traces returned should be those nearest to 10:20
+          today, not 10:20 a week ago.
+
+          Time units of endTs and lookback are milliseconds as opposed to
+          microseconds, the grain of Span.timestamp. Milliseconds is a more
+          familiar and supported granularity for query, index and windowing
+          functions
+      parameters:
+        - name: serviceName
+          in: query
+          required: false
+          description: |
+            Ex favstar (required) - Lower-case label of a node in the service
+            graph. The /services endpoint enumerates possible input values.
+          type: string
+        - name: spanName
+          in: query
+          required: false
+          description: |
+            Ex get - name of a span in a trace.
+            Only return traces that contains spans with this name.
+          type: string
+        - name: annotationQuery
+          in: query
+          type: string
+          required: false
+          description: |
+             Ex. `http.uri=/foo and retried` - If key/value (has an `=`),
+             constrains against Span.tags entres. If just a word, constrains
+             against Span.annotations[].value or Span.tags[].key. Any values are
+             AND against eachother. This means a span in the trace must match
+             all of these.
+        - name: minDuration
+          in: query
+          type: integer
+          description: |
+             Ex. 100000 (for 100ms). Only return traces whose `Span.duration` is
+             greater than or equal to minDuration microseconds.
+        - name: maxDuration
+          in: query
+          type: integer
+          description: |
+            Only return traces whose Span.duration is less than or equal to
+            `maxDuration` microseconds. Only valid with minDuration.
+        - name: endTs
+          in: query
+          type: integer
+          format: int64
+          description: |
+            Only return traces where all Span.timestamp are at or before this
+            time in epoch milliseconds. Defaults to current time.
+        - name: lookback
+          type: integer
+          format: int64
+          in: query
+          description: |
+            Only return traces where all  Span.timestamp are at or after (endTs
+            - * lookback) in milliseconds. Defaults to endTs, limited to a
+            system parameter QUERY_LOOKBACK
+        - name: limit
+          in: query
+          default: 10
+          type: integer
+          description: |
+            Maximum number of traces to return. Defaults to 10
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ListOfTraces"
+  /trace/{traceId}:
+    get:
+      parameters:
+        - name: traceId
+          in: path
+          required: true
+          type: string
+          maxLength: 32
+          minLength: 16
+          pattern: "[a-z0-9]{16,32}"
+          description: |
+                      Trace identifier, set on all spans within it.
+                      
+                      Encoded as 16 or 32 lowercase hex characters corresponding to 64 or 128 bits.
+                      For example, a 128bit trace ID looks like 4e441824ec2b6a44ffdc9bb9a6453df3
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Trace"
+        404:
+          description: "`traceId` not found"
+  /dependencies:
+    get:
+      description: |
+        Returns service links derived from spans.
+      parameters:
+        - name: endTs
+          in: query
+          description: |
+            only return links from spans where `Span.timestamp`  are at or before
+            this time in epoch milliseconds.
+          required: true
+          type: integer
+          format: int64
+        - name: lookback
+          in: query
+          description: |
+            only return links where all Span.timestamp are at or after
+            (`endTs - * lookback`) in milliseconds. Defaults to `endTs`, limited
+            to a system parameter `QUERY_LOOKBACK`
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            title: ListOfDependencyLinks
+            items:
+              $ref: "#/definitions/DependencyLink"
 definitions:
   Endpoint:
     type: object
@@ -106,6 +266,17 @@ definitions:
     type: array
     items:
       $ref: "#/definitions/Span"
+  Trace:
+    title: Trace
+    type: array
+    description: 'List of spans who have the same trace ID.'
+    items:
+      $ref: "#/definitions/Span"
+  ListOfTraces:
+    title: ListOfTraces
+    type: array
+    items:
+      $ref: "#/definitions/Trace"      
   Span:
     title: Span
     type: object
@@ -227,3 +398,15 @@ definitions:
       tags:
         $ref: '#/definitions/Tags'
         description: 'Tags give your span context for search, viewing and analysis.'
+  DependencyLink:
+    title: DependencyLink
+    type: object
+    properties:
+      parent:
+        type: string
+      child:
+        type: string
+      callCount:
+        type: integer
+      errorCount:
+        type: integer
