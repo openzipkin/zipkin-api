@@ -131,9 +131,9 @@ paths:
           format: int64
           in: query
           description: |
-            Only return traces where all  Span.timestamp are at or after (endTs
-            - * lookback) in milliseconds. Defaults to endTs, limited to a
-            system parameter QUERY_LOOKBACK
+            Only return traces where all Span.timestamp are at or after
+            (`endTs - * lookback`) in milliseconds. Defaults to `endTs`, limited
+            to a system parameter `QUERY_LOOKBACK`.
         - name: limit
           in: query
           default: 10
@@ -184,7 +184,7 @@ paths:
         - name: endTs
           in: query
           description: |
-            only return links from spans where `Span.timestamp`  are at or before
+            Only return links from spans where `Span.timestamp` are at or before
             this time in epoch milliseconds.
           required: true
           type: integer
@@ -192,9 +192,9 @@ paths:
         - name: lookback
           in: query
           description: |
-            only return links where all Span.timestamp are at or after
+            Only return links from spans where all Span.timestamp are at or after
             (`endTs - * lookback`) in milliseconds. Defaults to `endTs`, limited
-            to a system parameter `QUERY_LOOKBACK`
+            to a system parameter `QUERY_LOOKBACK`.
           type: integer
           format: int64
       responses:
