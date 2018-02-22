@@ -157,7 +157,7 @@ const string HTTP_METHOD = "http.method"
  * a route "/objects/:objectId" could be "/objects/abdc-ff". This does not limit cardinality like
  * HTTP_ROUTE("http.route") can, so is not a good input to a span name.
  *
- * The Zipkin query api only supports equals filters, Dropping query parameters makes the number
+ * The Zipkin query api only supports equals filters. Dropping query parameters makes the number
  * of distinct URIs less. For example, one can query for the same resource, regardless of signing
  * parameters encoded in the query line. Dropping query parameters also limits the security impact
  * of this tag.
