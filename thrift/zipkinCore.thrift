@@ -174,8 +174,8 @@ const string HTTP_PATH = "http.path"
  * based on HTTP_STATUS_CODE("http.status_code").
  *
  * Unlike HTTP_PATH("http.path"), this value is fixed cardinality, so is a safe input to a span
- * name function or a metrics dimension. Different formats are possible, for example, the following
- * are all valid route templates: "/objects/{objectId}" "/objects/:objectId" "/objects/*"
+ * name function or a metrics dimension. Different formats are possible. For example, the following
+ * are all valid route templates: "/objects" "/objects/:objectId" "/objects/*"
  */
 const string HTTP_ROUTE = "http.route"
 
