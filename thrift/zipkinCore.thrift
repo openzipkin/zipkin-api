@@ -153,19 +153,31 @@ const string HTTP_METHOD = "http.method"
 /**
  * The absolute http path, without any query parameters. Ex. "/objects/abcd-ff"
  *
- * Used to filter against an http route, portably with zipkin v1.
+ * Used as a filter or to clarify the request path for a given route. For example, the path for
+ * a route "/objects/:objectId" could be "/objects/abdc-ff". This does not limit cardinality like
+ * HTTP_ROUTE("http.route") can, so is not a good input to a span name.
  *
- * In zipkin v1, only equals filters are supported. Dropping query parameters makes the number
+ * The Zipkin query api only supports equals filters, Dropping query parameters makes the number
  * of distinct URIs less. For example, one can query for the same resource, regardless of signing
- * parameters encoded in the query line. This does not reduce cardinality to a HTTP single route.
- * For example, it is common to express a route as an http URI template like
- * "/resource/{resource_id}". In systems where only equals queries are available, searching for
- * http/path=/resource won't match if the actual request was /resource/abcd-ff.
+ * parameters encoded in the query line. Dropping query parameters also limits the security impact
+ * of this tag.
  *
  * Historical note: This was commonly expressed as "http.uri" in zipkin, even though it was most
- * often just a path.
  */
 const string HTTP_PATH = "http.path"
+
+/**
+ * The route which a request matched or "" (empty string) if routing is supported, but there was no
+ * match. Ex "/objects/{objectId}"
+ *
+ * Often used as a span name when known, with empty routes coercing to "not_found" or "redirected"
+ * based on HTTP_STATUS_CODE("http.status_code").
+ *
+ * Unlike HTTP_PATH("http.path"), this value is fixed cardinality, so is a safe input to a span
+ * name function or a metrics dimension. Different formats are possible, for example, the following
+ * are all valid route templates: "/objects/{objectId}" "/objects/:objectId" "/objects/*"
+ */
+const string HTTP_ROUTE = "http.route"
 
 /**
  * The entire URL, including the scheme, host and query parameters if available. Ex.
