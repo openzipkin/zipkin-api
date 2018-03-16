@@ -17,13 +17,13 @@ paths:
       description: |
         Returns a list of all service names associated with span endpoints.
       responses:
-        200:
+        '200':
           description: Succes
           schema:
             type: array
             items:
               type: string
-        400:
+        '400':
           description: Bad Request Error
   /spans:
     get:
@@ -37,13 +37,13 @@ paths:
           graph. The /services endpoint enumerates possible input values.
         type: string
       responses:
-        200:
+        '200':
           description: OK
           schema:
             type: array
             items:
               type: string
-        400:
+        '400':
           description: Bad Request Error  
     post:
       description: |
@@ -59,7 +59,7 @@ paths:
           schema:
             $ref: "#/definitions/ListOfSpans"
       responses:
-        202:
+        '202':
           description: Accepted
   /traces:
     get:
@@ -134,7 +134,7 @@ paths:
           description: |
             Maximum number of traces to return. Defaults to 10
       responses:
-        200:
+        '200':
           description: OK
           schema:
             $ref: "#/definitions/ListOfTraces"
@@ -154,11 +154,11 @@ paths:
                       Encoded as 16 or 32 lowercase hex characters corresponding to 64 or 128 bits.
                       For example, a 128bit trace ID looks like 4e441824ec2b6a44ffdc9bb9a6453df3
       responses:
-        200:
+        '200':
           description: OK
           schema:
             $ref: "#/definitions/Trace"
-        404:
+        '404':
           description: "`traceId` not found"
   /dependencies:
     get:
@@ -182,7 +182,7 @@ paths:
           type: integer
           format: int64
       responses:
-        200:
+        '200':
           description: OK
           schema:
             type: array
