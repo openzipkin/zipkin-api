@@ -21,13 +21,13 @@ paths:
       description: |
         Returns a list of all service names associated with annotations.
       responses:
-        200:
+        '200':
           description: Succes
           schema:
             type: array
             items:
               type: string
-        400:
+        '400':
           description: Bad Request Error
   /spans:
     get:
@@ -41,13 +41,13 @@ paths:
           trace. The /services endpoint enumerates possible input values.
         type: string
       responses:
-        200:
+        '200':
           description: OK
           schema:
             type: array
             items:
               type: string
-        400:
+        '400':
           description: Bad Request Error
     post:
       description: |
@@ -65,7 +65,7 @@ paths:
           schema:
             $ref: "#/definitions/ListOfSpans"
       responses:
-        202:
+        '202':
           description: Accepted
   /traces:
     get:
@@ -141,7 +141,7 @@ paths:
           description: |
             Maximum number of traces to return. Defaults to 10
       responses:
-        200:
+        '200':
           description: OK
           schema:
             $ref: "#/definitions/ListOfTraces"
@@ -167,11 +167,11 @@ paths:
             adjusters. For example, this might explain or rule out clock skew.
           type: boolean
       responses:
-        200:
+        '200':
           description: OK
           schema:
             $ref: "#/definitions/Trace"
-        404:
+        '404':
           description: "`traceId` not found"
   /dependencies:
     get:
@@ -198,7 +198,7 @@ paths:
           type: integer
           format: int64
       responses:
-        200:
+        '200':
           description: OK
           schema:
             type: array
