@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package zipkin2.proto3;
+
+option java_multiple_files = true;
+
+message Span {
+  // 8 or 16 bytes required
+  bytes trace_id = 1;
+  // 8 bytes optional
+  bytes parent_id = 2;
+  // 8 bytes required
+  bytes id = 3;
+  enum Kind {
+    KIND_UNSPECIFIED = 0;
+    SERVER = 1;
+    CLIENT = 2;
+    PRODUCER = 3;
+    CONSUMER = 4;
+  }
+  Kind kind = 4;
+  string name = 5;
+  uint64 timestamp = 6;
+  uint64 duration = 7;
+  Endpoint local_endpoint = 8;
+  Endpoint remote_endpoint = 9;
+  repeated Annotation annotations = 10;
+  map<string, string> tags = 11;
+  bool debug = 12;
+  bool shared = 13;
+}
+
+message Endpoint {
+  string service_name = 4;
+  // 4 bytes
+  bytes ipv4 = 1;
+  // 16 bytes
+  bytes ipv6 = 3;
+  // technically uint16 would work, but there is none
+  int32 port = 2;
+}
+
+message Annotation {
+  uint64 timestamp = 5;
+  string value = 1;
+}
+
