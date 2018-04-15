@@ -9,7 +9,7 @@ option java_multiple_files = true;
 // are quite small.
 //
 // Default values are ok, as only natural numbers are used. For example, zero is
-// an invalid timestamp and an invalid duration, false values for debug or sampled
+// an invalid timestamp and an invalid duration, false values for debug or shared
 // are ignorable, and zero-length strings also coerce to null.
 //
 // Note fields up to 15 take 1 byte to encode. Take care when adding new fields
