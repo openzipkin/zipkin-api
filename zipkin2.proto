@@ -4,6 +4,14 @@ package zipkin2.proto3;
 
 option java_multiple_files = true;
 
+// Epoch timestamp are encoded fixed64 are varint would also be 8 bytes, and more
+// expensive to encode and size. Duration is stored uint64, as often the numbers
+// are quite small.
+//
+// Default values are ok, as only natural numbers are used. For example, zero is
+// an invalid timestamp and an invalid duration, false values for debug or sampled
+// are ignorable, and zero-length strings also coerce to null.
+//
 // Note fields up to 15 take 1 byte to encode. Take care when adding new fields
 // https://developers.google.com/protocol-buffers/docs/proto3#assigning-tags
 message Span {
@@ -22,7 +30,7 @@ message Span {
   }
   Kind kind = 4;
   string name = 5;
-  uint64 timestamp = 6;
+  fixed64 timestamp = 6;
   uint64 duration = 7;
   Endpoint local_endpoint = 8;
   Endpoint remote_endpoint = 9;
@@ -43,7 +51,7 @@ message Endpoint {
 }
 
 message Annotation {
-  uint64 timestamp = 1;
+  fixed64 timestamp = 1;
   string value = 2;
 }
 
