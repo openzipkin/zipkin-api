@@ -23,8 +23,8 @@ message Span {
   bytes id = 3;
   enum Kind {
     KIND_UNSPECIFIED = 0;
-    SERVER = 1;
-    CLIENT = 2;
+    CLIENT = 1;
+    SERVER = 2;
     PRODUCER = 3;
     CONSUMER = 4;
   }
