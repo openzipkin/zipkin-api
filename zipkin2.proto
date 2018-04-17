@@ -55,3 +55,20 @@ message Annotation {
   string value = 2;
 }
 
+// A list of spans with possibly different trace ids, in no particular order.
+//
+// This is used for all transports: POST, Kafka messages etc. No other fields
+// are expected, This message facilitates the mechanics of encoding a list, as
+// a field number is required. The name of this type is the same in the OpenApi
+// aka Swagger specification.
+message ListOfSpans {
+  repeated Span spans = 1;
+}
+
+message DependencyLink {
+  string parent = 1;
+  string child = 2;
+  uint64 call_count = 3;
+  uint64 error_count = 4;
+}
+
