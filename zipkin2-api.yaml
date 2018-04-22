@@ -385,8 +385,7 @@ definitions:
         description: |
                     Duration in **microseconds** of the critical path, if known. Durations of less
                     than one are rounded up. Duration of children can be longer than their
-                    parents
-                    due to asynchronous operations.
+                    parents due to asynchronous operations.
                     
                     For example 150 milliseconds is 150000 microseconds.
       debug:
