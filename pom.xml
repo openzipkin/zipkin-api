@@ -110,6 +110,15 @@
           </configuration>
         </plugin>
 
+        <!-- Ensures checksums are added to published jars -->
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>${maven-install-plugin.version}</version>
+          <configuration>
+            <createChecksum>true</createChecksum>
+          </configuration>
+        </plugin>
+
         <plugin>
           <artifactId>maven-release-plugin</artifactId>
           <version>${maven-release-plugin.version}</version>
@@ -131,14 +140,6 @@
       <id>release</id>
       <build>
         <plugins>
-          <!-- Ensures checksums are added to published jars -->
-          <plugin>
-            <artifactId>maven-install-plugin</artifactId>
-            <version>${maven-install-plugin.version}</version>
-            <configuration>
-              <createChecksum>true</createChecksum>
-            </configuration>
-          </plugin>
           <!-- Creates source jar; This works even when there are no java sources -->
           <plugin>
             <artifactId>maven-source-plugin</artifactId>
@@ -152,6 +153,7 @@
               </execution>
             </executions>
           </plugin>
+
           <!-- Creates empty javadoc jar -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
