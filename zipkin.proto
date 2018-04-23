@@ -1,4 +1,4 @@
-// Copyright 2016-2018 The OpenZipkin Authors
+// Copyright 2018 The OpenZipkin Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,10 @@
 
 syntax = "proto3";
 
-package zipkin2.proto3;
+package zipkin.proto3;
 
+// In Java, the closest model type to this proto is in the "zipkin2" package
+option java_package = "zipkin2.proto3";
 option java_multiple_files = true;
 
 // A span is a single-host view of an operation. A trace is a series of spans
