@@ -4,8 +4,8 @@
 
 This repo includes an [OpenAPI Spec](./zipkin-api.yaml) and [Protocol Buffers interchange format](./zipkin.proto).
 
-## Language independent interchange format for Zipkin transports (Protocol Buffers v3)
-* [proto3](./zipkin.proto) - Requires Zipkin 2.8+ or similar to parse it.
+## Language independent interchange format for Zipkin transports
+* [Protocol Buffers v3](./zipkin.proto) - Requires Zipkin 2.8+ or similar to parse it.
 
 ## OpenApi (Http endpoint of the zipkin server)
 * [/api/v1](./zipkin-api.yaml) - Still supported on zipkin-server
