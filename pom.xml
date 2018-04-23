@@ -78,7 +78,7 @@
       <resource>
         <directory>.</directory>
         <includes>
-          <include>zipkin2.proto</include>
+          <include>zipkin.proto</include>
         </includes>
       </resource>
     </resources>
