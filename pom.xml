@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.zipkin.proto3</groupId>
+  <artifactId>zipkin-proto3</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>zipkin-proto3</name>
+  <description>Language independent interchange format for Zipkin transports (Protocol Buffers v3)</description>
+  <url>https://github.com/openzipkin/zipkin-api</url>
+  <inceptionYear>2018</inceptionYear>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
+    <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
+    <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+    <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+    <maven-javadoc-plugin.version>3.0.0</maven-javadoc-plugin.version>
+    <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
+  </properties>
+
+  <organization>
+    <name>OpenZipkin</name>
+    <url>http://zipkin.io/</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <!-- Developer section is needed for Maven Central, but doesn't need to include each person -->
+  <developers>
+    <developer>
+      <id>openzipkin</id>
+      <name>OpenZipkin Gitter</name>
+      <url>https://gitter.im/openzipkin/zipkin</url>
+    </developer>
+  </developers>
+
+  <scm>
+    <url>https://github.com/openzipkin/zipkin-api</url>
+    <connection>scm:git:https://github.com/openzipkin/zipkin-api.git</connection>
+    <developerConnection>scm:git:https://github.com/openzipkin/zipkin-api.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>bintray</id>
+      <url>https://api.bintray.com/openzipkin/maven/zipkin-proto3/;publish=1</url>
+    </repository>
+    <snapshotRepository>
+      <id>jfrog-snapshots</id>
+      <url>http://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <issueManagement>
+    <system>Github</system>
+    <url>https://github.com/openzipkin/zipkin-api/issues</url>
+  </issueManagement>
+
+  <dependencies>
+    <!-- no dependencies as this is just javascript -->
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>.</directory>
+        <includes>
+          <include>zipkin2.proto</include>
+        </includes>
+      </resource>
+    </resources>
+    <pluginManagement>
+      <plugins>
+        <!-- mvn -N io.takari:maven:wrapper -Dmaven=3.5.3 -->
+        <plugin>
+          <groupId>io.takari</groupId>
+          <artifactId>maven</artifactId>
+          <version>0.6.0</version>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${maven-deploy-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${maven-jar-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>io.zipkin.centralsync-maven-plugin</groupId>
+          <artifactId>centralsync-maven-plugin</artifactId>
+          <version>0.1.0</version>
+          <configuration>
+            <packageName>zipkin-proto3</packageName>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>${maven-release-plugin.version}</version>
+          <configuration>
+            <useReleaseProfile>false</useReleaseProfile>
+            <releaseProfiles>release</releaseProfiles>
+            <!-- to match zipkin-scala (openzipkin/zipkin) -->
+            <tagNameFormat>@{project.version}</tagNameFormat>
+          </configuration>
+        </plugin>
+
+      </plugins>
+    </pluginManagement>
+
+  </build>
+  <profiles>
+    <profile>
+      <!-- Maven central has a few requirements this profile ensures are met -->
+      <id>release</id>
+      <build>
+        <plugins>
+          <!-- Ensures checksums are added to published jars -->
+          <plugin>
+            <artifactId>maven-install-plugin</artifactId>
+            <version>${maven-install-plugin.version}</version>
+            <configuration>
+              <createChecksum>true</createChecksum>
+            </configuration>
+          </plugin>
+          <!-- Creates source jar; This works even when there are no java sources -->
+          <plugin>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>${maven-source-plugin.version}</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Creates empty javadoc jar -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>empty-javadoc-jar</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+                <configuration>
+                  <classifier>javadoc</classifier>
+                  <classesDirectory>${basedir}/javadoc</classesDirectory>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>
