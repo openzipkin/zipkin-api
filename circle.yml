@@ -12,52 +12,120 @@
 # the License.
 #
 
-machine:
-  environment:
-    JAVA_HOME: /usr/lib/jvm/zulu-9-amd64
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    steps:
+      - checkout
 
-dependencies:
-  override:
-    - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9
-    - sudo apt-add-repository -y "deb http://repos.azulsystems.com/ubuntu stable main"
-    - sudo apt-get -y update
-    - sudo apt-get -y install zulu-9
-    - sudo apt-get install xsltproc
-    - ./build-support/go-offline.sh
+      - restore_cache:
+          key: maven-dependencies-{{ checksum "pom.xml" }}
 
-test:
-  override:
-    - ./mvnw verify
-  post:
-    # parameters used during release
-    # allocate commits to CI, not the owner of the deploy key
-    - git config user.name "zipkinci"
-    - git config user.email "zipkinci+zipkin-dev@googlegroups.com"
-    # setup https authentication credentials, used by ./mvnw release:prepare
-    - git config credential.helper "store --file=.git/credentials"
-    - echo "https://$GH_TOKEN:@github.com" > .git/credentials
-    # copy test reports to CircleCI test reports directory
-    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
-    - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+      - run:
+          name: Download dependencies
+          command: |
+            sudo apt-get install xsltproc
+            ./build-support/go-offline.sh
+      - save_cache:
+          key: maven-dependencies-{{ checksum "pom.xml" }}
+          paths:
+            - ~/.m2
 
-# Send notifications to Gitter
+      - run:
+          name: Tests
+          command: ./mvnw clean verify
+
+      - store_test_results:
+          path: target/surefire-reports
+      - store_artifacts:
+          path: target/surefire-reports
+
+  publish_snapshot:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    steps:
+      - checkout
+      - restore_cache:
+          key: maven-dependencies-{{ checksum "pom.xml" }}
+      - run:
+          name: Publish snapshot
+          command: |
+            # Guard against running this on pull requests or forks
+            [ "$CIRCLE_PROJECT_USERNAME" == "openzipkin" ] || exit 0
+            [ -z "$CIRCLE_PR_NUMBER" ] || exit 0
+            ./build-support/publish-snapshot.sh
+
+  publish_stable:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    steps:
+      - checkout
+      - restore_cache:
+          key: maven-dependencies-{{ checksum "pom.xml" }}
+      - run:
+          name: Publish stable version
+          command: |
+            # Guard against running this on pull requests or forks
+            [ "$CIRCLE_PROJECT_USERNAME" == "openzipkin" ] || exit 0
+            [ -z "$CIRCLE_PR_NUMBER" ] || exit 0
+            ./build-support/publish-stable.sh
+
+  trigger_publish:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    steps:
+      - checkout
+      - restore_cache:
+          key: maven-dependencies-{{ checksum "pom.xml" }}
+      - run:
+          name: Configure Git for release
+          command: |
+            # parameters used during release
+            # allocate commits to CI, not the owner of the deploy key
+            git config user.name "zipkinci"
+            git config user.email "zipkinci+zipkin-dev@googlegroups.com"
+            # setup https authentication credentials, used by ./mvnw release:prepare
+            git config credential.helper "store --file=.git/credentials"
+            echo "https://$GH_TOKEN:@github.com" > .git/credentials
+      - run:
+          name: Trigger publish
+          command: |
+            # Guard against running this on pull requests or forks
+            [ "$CIRCLE_PROJECT_USERNAME" == "openzipkin" ] || exit 0
+            [ -z "$CIRCLE_PR_NUMBER" ] || exit 0
+            ./build-support/trigger-publish.sh
+
+
+workflows:
+  version: 2
+  build_and_publish:
+    jobs:
+      - build
+      - publish_snapshot:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+      - publish_stable:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /\d+\.\d+\.\d+/
+      - trigger_publish:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /release-\d+\.\d+\.\d+/
+
 notify:
   webhooks:
     - url: https://webhooks.gitter.im/e/22adbb9973299092e6ae
-
-deployment:
-  trigger:
-    owner: openzipkin
-    tag: /release-\d+\.\d+\.\d+/
-    commands:
-      - ./build-support/trigger-publish.sh
-  publish-stable:
-    owner: openzipkin
-    tag: /\d+\.\d+\.\d+/
-    commands:
-      - ./build-support/publish-stable.sh
-  publish-snapshot:
-    owner: openzipkin
-    branch: master
-    commands:
-      - ./build-support/publish-snapshot.sh
