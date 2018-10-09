@@ -210,10 +210,11 @@ definitions:
     type: object
     title: Endpoint
     description: The network context of a node in the service graph
+    required:
+      - serviceName
     properties:
       serviceName:
         type: string
-        required: true
         description: |
                     Lower-case label of this node in the service graph, such as "favstar". Set
                     to empty string if unknown.
@@ -242,6 +243,9 @@ definitions:
   Annotation:
     title: Annotation
     type: object
+    required:
+      - timestamp
+      - value
     description: |
                 Associates an event that explains latency with a timestamp.
                 Unlike log statements, annotations are often codes. Ex. "sr" for ServerReceive
@@ -275,6 +279,9 @@ definitions:
   BinaryAnnotation:
     title: BinaryAnnotation
     type: object
+    required:
+      - key
+      - value
     description: |
                 Adds context to a span, for search, viewing and analysis.
                 
@@ -315,13 +322,16 @@ definitions:
   Span:
     title: Span
     type: object
+    required:
+      - traceId
+      - id
+      - name
     properties:
       traceId:
         type: string
         maxLength: 32
         minLength: 16
         pattern: "[a-z0-9]{16,32}"
-        required: true
         description: |
                     Randomly generated, unique identifier for a trace, set on all spans within it.
                     
@@ -329,7 +339,6 @@ definitions:
                     For example, a 128bit trace ID looks like 4e441824ec2b6a44ffdc9bb9a6453df3
       name:
         type: string
-        required: true
         description: |
                     The logical operation this span represents in lowercase (e.g. rpc method).
                     Set to empty string if unknown.
@@ -347,7 +356,6 @@ definitions:
         maxLength: 16
         minLength: 16
         pattern: "[a-z0-9]{16}"
-        required: true
         description: |
                     Unique 64bit identifier for this operation within the trace.
                     
