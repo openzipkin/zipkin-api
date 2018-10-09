@@ -231,6 +231,9 @@ definitions:
                 
                 Zipkin v1 core annotations such as "cs" and "sr" have been replaced with
                 Span.Kind, which interprets timestamp and duration.
+    required:
+      - timestamp
+      - value
     properties:
       timestamp:
         type: integer
@@ -428,6 +431,10 @@ definitions:
   DependencyLink:
     title: DependencyLink
     type: object
+    required:
+      - parent
+      - child
+      - callCount
     properties:
       parent:
         type: string
