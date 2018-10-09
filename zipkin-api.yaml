@@ -408,6 +408,10 @@ definitions:
   DependencyLink:
     title: DependencyLink
     type: object
+    required:
+      - parent
+      - child
+      - callCount
     properties:
       parent:
         type: string
