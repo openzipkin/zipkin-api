@@ -430,6 +430,19 @@ definitions:
         description: 'Tags give your span context for search, viewing and analysis.'
   DependencyLink:
     title: DependencyLink
+    description: |
+                The count of traced calls between services, or between a service and a broker.
+
+                The direction of the link is parent to child, and can be one of:
+                 * client to server
+                 * producer to broker
+                 * broker to consumer
+
+                Note: This is related to span ID count between a sender and receiver, but there
+                is nuance that makes it more difficult than counting unique span IDs. Ex. the
+                parent or child might be uninstrumented: detected via the remote endpoint. There
+                can also be scenarios where both sides are instrumented. Please use existing tools
+                such as zipkin-dependencies to derive links as they avoid under or over counting.
     type: object
     required:
       - parent
@@ -438,9 +451,13 @@ definitions:
     properties:
       parent:
         type: string
+        description: 'The service name of the caller: client or message producer or broker.'
       child:
         type: string
+        description: 'The service name of the callee: server or message consumer or broker.'
       callCount:
         type: integer
+        description: 'Total traced calls made from the parent to the child.'
       errorCount:
         type: integer
+        description: 'Total traced calls made from the parent to the child known to be in error.'
