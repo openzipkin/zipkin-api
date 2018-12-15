@@ -50,6 +50,7 @@ paths:
           Uploads a list of spans encoded per content-type, for example json.
       consumes:
         - application/json
+        - application/x-protobuf
       produces: []
       parameters:
         - name: spans
