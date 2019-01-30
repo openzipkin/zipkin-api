@@ -53,7 +53,8 @@ message Span {
   // Randomly generated, unique identifier for a trace, set on all spans within
   // it.
   //
-  // This field is required and encoded as 8 or 16 opaque bytes.
+  // This field is required and encoded as 8 or 16 bytes, in big endian byte
+  // order.
   bytes trace_id = 1;
   // The parent span ID or absent if this the root span in a trace.
   bytes parent_id = 2;
