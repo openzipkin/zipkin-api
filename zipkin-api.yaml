@@ -151,7 +151,7 @@ paths:
         - name: traceId
           in: path
           required: true
-          description: the 64 or 128-bit hex-encoded id of the trace as a path parameter.
+          description: the 64 or 128-bit big endian, hex-encoded id of the trace as a path parameter.
           type: string
         - name: raw
           in: query
@@ -335,7 +335,8 @@ definitions:
         description: |
                     Randomly generated, unique identifier for a trace, set on all spans within it.
                     
-                    Encoded as 16 or 32 lowercase hex characters corresponding to 64 or 128 bits.
+                    Encoded as 16 or 32 lowercase hex characters in big endian byte order,
+                    corresponding to 64 or 128 bits,
                     For example, a 128bit trace ID looks like 4e441824ec2b6a44ffdc9bb9a6453df3
       name:
         type: string
