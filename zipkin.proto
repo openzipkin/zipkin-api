@@ -14,6 +14,8 @@
 
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+
 package zipkin.proto3;
 
 // In Java, the closest model type to this proto is in the "zipkin2" package
@@ -211,4 +213,15 @@ message Annotation {
 // aka Swagger specification. https://zipkin.io/zipkin-api/#/default/post_spans
 message ListOfSpans {
   repeated Span spans = 1;
+}
+
+// Use this to report spans onto the gRPC transport. Implementations are asynchronous and may drop
+// spans for reasons of sampling or storage availability. While this is primarily used to store
+// spans, other operations may take place such as aggregation of service dependencies or data
+// cleaning.
+service SpanService {
+
+  // Unary call analogous to the POST /api/v2/spans endpoint. Spans are not required to be complete
+  // or belonging to the same trace.
+  rpc Report(zipkin.proto3.ListOfSpans) returns (google.protobuf.Empty) {}
 }
