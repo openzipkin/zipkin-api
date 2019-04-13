@@ -190,6 +190,38 @@ paths:
             title: ListOfDependencyLinks
             items:
               $ref: "#/definitions/DependencyLink"
+  /autocompleteKeys:
+    get:
+      description: Returns autocomplete keys configured
+      responses:
+        '200':
+          description: Succes
+          schema:
+            type: array
+            items:
+              type: string
+        '400':
+          description: Bad Request Error
+  /autocompleteValues:
+    get:
+      description: Returns the list of auto complete values for the given key
+      parameters:
+      - name: key
+        in: query
+        required: true
+        description: |
+          name of the site specific tag key 
+        type: string
+      responses:
+        '200':
+          description: Succes
+          schema:
+            type: array
+            items:
+              type: string
+        '400':
+          description: Bad Request Error
+
 definitions:
   Endpoint:
     type: object
