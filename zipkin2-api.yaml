@@ -192,7 +192,8 @@ paths:
               $ref: "#/definitions/DependencyLink"
   /autocompleteKeys:
     get:
-      description: Returns autocomplete keys configured
+      description: /
+        Returns autocomplete keys configured. Keys is configured whitelist of Span.tags
       responses:
         '200':
           description: Succes
@@ -204,7 +205,8 @@ paths:
           description: Bad Request Error
   /autocompleteValues:
     get:
-      description: Returns the list of auto complete values for the given key
+      description: Returns the list of auto complete values for the given key. 
+        Result will be empty if the key is reconfigured or there are no values for the given key
       parameters:
       - name: key
         in: query
