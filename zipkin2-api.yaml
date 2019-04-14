@@ -221,8 +221,8 @@ paths:
       responses:
         '200':
           description: |
-            Success result is empty when there are no values for the key or the key
-            was configured in the /autocompleteKeys endpoint.
+            Success result is empty when there are no values or the key was not
+            configured.
           schema:
             type: array
             items:
