@@ -190,6 +190,46 @@ paths:
             title: ListOfDependencyLinks
             items:
               $ref: "#/definitions/DependencyLink"
+  /autocompleteKeys:
+    get:
+      description: |
+        Returns a subset of keys from Span.tags configured for value autocompletion.
+        This helps sites populate common keys into the annotationQuery parameter of the
+        /traces endpoint. For example, a UI can allow users to select site-specific
+        keys from a drop-down as opposed to typing them in manually. This helps guide
+        users towards the more correct keys and avoids typos or formatting problems.
+      responses:
+        '200':
+          description: Success is a list of site-specific keys, such as environment.
+          schema:
+            type: array
+            items:
+              type: string
+        '400':
+          description: Bad Request Error
+  /autocompleteValues:
+    get:
+      description: |
+        Returns all known values of Span.tags for the given autocomplete key. Refer
+        to the description of /autocompleteKeys for the use case.
+      parameters:
+      - name: key
+        in: query
+        required: true
+        description: Name of the autocomplete key from the /autocompleteKeys endpoint.
+        type: string
+      responses:
+        '200':
+          description: |
+            Success result is empty when there are no values or the key was not
+            configured.
+          schema:
+            type: array
+            items:
+              type: string
+        '400':
+          description: Bad Request Error
+
 definitions:
   Endpoint:
     type: object
