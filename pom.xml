@@ -299,22 +299,6 @@
           </execution>
         </executions>
       </plugin>
-
-      <!-- org.apache:apache:21 sets maven-remote-resources-plugin in plugins, not pluginManagement
-           This results in execution in the parent project, and a side effect of an empty
-           DEPENDENCIES file in the assembly when packaged with the apache-release profile.
-
-           https://issues.apache.org/jira/browse/MPOM-218
-
-           This works around the problem by skipping at the parent level at the cost of having to
-           un-skip it at every deployed child.
-       -->
-      <plugin>
-        <artifactId>maven-remote-resources-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
