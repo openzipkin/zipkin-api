@@ -26,7 +26,7 @@
     <version>21</version>
   </parent>
 
-  <groupId>io.zipkin.proto3</groupId>
+  <groupId>org.apache.zipkin.proto3</groupId>
   <artifactId>zipkin-proto3</artifactId>
   <version>0.2.1-SNAPSHOT</version>
   <packaging>jar</packaging>
