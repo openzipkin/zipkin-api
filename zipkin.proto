@@ -228,5 +228,5 @@ service SpanService {
   // Report the provided spans to the collector. Analogous to the HTTP POST 
   // /api/v2/spans endpoint. Spans are not required to be complete or belonging 
   // to the same trace.
-  rpc Report(zipkin.proto3.ListOfSpans) returns (ReportResponse) {}
+  rpc Report(ListOfSpans) returns (ReportResponse) {}
 }
