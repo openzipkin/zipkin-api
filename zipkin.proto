@@ -214,7 +214,8 @@ message ListOfSpans {
 }
 
 // Response for SpanService/Report RPC. This response currently does not return
-// any information beyond indicating that the request has finished.
+// any information beyond indicating that the request has finished. That said,
+// it may be extended in the future.
 message ReportResponse {
 }
 
