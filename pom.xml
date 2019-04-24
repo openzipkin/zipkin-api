@@ -36,15 +36,6 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <main.basedir>${project.basedir}</main.basedir>
-
-    <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
-    <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
-    <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-    <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-    <maven-javadoc-plugin.version>3.0.0</maven-javadoc-plugin.version>
-    <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
-    <license-maven-plugin.version>3.0</license-maven-plugin.version>
-    <maven-failsafe-plugin.version>3.0.0-M3</maven-failsafe-plugin.version>
   </properties>
 
   <name>zipkin-proto3</name>
@@ -113,7 +104,7 @@
   </issueManagement>
 
   <dependencies>
-    <!-- no dependencies as this is just javascript -->
+    <!-- no dependencies as this is just proto -->
   </dependencies>
 
   <build>
@@ -127,78 +118,23 @@
     </resources>
     <pluginManagement>
       <plugins>
-        <!-- mvn -N io.takari:maven:wrapper -Dmaven=3.5.3 -->
+        <!-- mvn -N io.takari:maven:wrapper generates the ./mvnw script -->
         <plugin>
           <groupId>io.takari</groupId>
           <artifactId>maven</artifactId>
-          <version>0.7.4</version>
+          <version>0.7.5</version>
           <configuration>
             <maven>3.6.1</maven>
-          </configuration>
-        </plugin>
-
-        <plugin>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>${maven-deploy-plugin.version}</version>
-        </plugin>
-
-        <plugin>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>${maven-jar-plugin.version}</version>
-        </plugin>
-
-        <plugin>
-          <groupId>io.zipkin.centralsync-maven-plugin</groupId>
-          <artifactId>centralsync-maven-plugin</artifactId>
-          <version>0.1.0</version>
-          <configuration>
-            <packageName>zipkin-proto3</packageName>
-          </configuration>
-        </plugin>
-
-        <!-- Ensures checksums are added to published jars -->
-        <plugin>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>${maven-install-plugin.version}</version>
-          <configuration>
-            <createChecksum>true</createChecksum>
-          </configuration>
-        </plugin>
-
-        <plugin>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>${maven-release-plugin.version}</version>
-          <configuration>
-            <useReleaseProfile>false</useReleaseProfile>
-            <releaseProfiles>release</releaseProfiles>
-            <!-- to match zipkin-scala (openzipkin/zipkin) -->
-            <tagNameFormat>@{project.version}</tagNameFormat>
-          </configuration>
-        </plugin>
-
-        <plugin>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <!-- inherit version from org.apache:parent -->
-          <configuration>
-            <failOnError>false</failOnError>
-            <!-- hush pedantic warnings: we don't put param and return on everything! -->
-            <doclint>none</doclint>
           </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
 
     <plugins>
-      <!-- Uploads occur as a last step (which also adds checksums) -->
-      <plugin>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <version>3.0.0-M1</version>
-      </plugin>
-
       <plugin>
         <groupId>com.mycila</groupId>
         <artifactId>license-maven-plugin</artifactId>
-        <version>${license-maven-plugin.version}</version>
+        <version>3.0</version>
         <configuration>
           <header>${main.basedir}/src/etc/header.txt</header>
           <mapping>
@@ -208,18 +144,18 @@
           <excludes>
             <exclude>.travis.yml</exclude>
             <exclude>.gitignore</exclude>
+            <exclude>.gitattributes</exclude>
             <exclude>.mvn/**</exclude>
             <exclude>mvnw*</exclude>
             <exclude>etc/header.txt</exclude>
             <exclude>**/.idea/**</exclude>
             <exclude>LICENSE</exclude>
             <exclude>DISCLAIMER</exclude>
+            <exclude>DEPENDENCIES</exclude>
             <exclude>NOTICE</exclude>
             <exclude>Jenkinsfile</exclude>
             <exclude>package.json</exclude>
             <exclude>**/*.md</exclude>
-            <exclude>**/*.thrift</exclude>
-            <exclude>**/*.proto</exclude>
           </excludes>
           <strictCheck>true</strictCheck>
         </configuration>
@@ -245,7 +181,7 @@
             <configuration>
               <rules>
                 <requireJavaVersion>
-                  <version>[11,12)</version>
+                  <version>[1.8,12)</version>
                 </requireJavaVersion>
               </rules>
             </configuration>
@@ -307,6 +243,25 @@
       <id>apache-release</id>
       <build>
         <plugins>
+          <!-- Creates empty javadoc jar -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>empty-javadoc-jar</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+                <configuration>
+                  <classifier>javadoc</classifier>
+                  <classesDirectory>${basedir}/javadoc</classesDirectory>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
           <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
             <executions>
