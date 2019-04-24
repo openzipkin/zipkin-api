@@ -50,13 +50,6 @@ pipeline {
             }
         }
 
-        stage('Run tests') {
-            steps {
-                // use install, as opposed to verify, to ensure invoker tests use latest code
-                sh './mvnw clean install --batch-mode -nsu'
-            }
-        }
-
         stage('Publish snapshot') {
             when {
                 branch 'master'
@@ -68,11 +61,6 @@ pipeline {
     }
 
     post {
-        always {
-            junit '**/target/surefire-reports/*.xml'
-            deleteDir()
-        }
-
         changed {
             script {
                 if (env.BRANCH_NAME == 'master') {
