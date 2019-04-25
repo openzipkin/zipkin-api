@@ -31,6 +31,7 @@
       <outputDirectory/>
       <includes>
         <include>LICENSE</include>
+        <include>DISCLAIMER</include>
         <include>NOTICE</include>
         <include>README.md</include>
         <include>thrift/*.thrift</include>
