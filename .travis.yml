@@ -1,4 +1,9 @@
-language: node_js
+# Run `travis lint` when changing this file to avoid breaking the build.
 
-node_js: 
-  - stable
+cache:
+  directories:
+  - $HOME/.npm
+
+language: node_js
+node_js:
+  - "12"
