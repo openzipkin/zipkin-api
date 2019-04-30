@@ -7,5 +7,3 @@ cache:
 language: node_js
 node_js:
   - "12"
-before_install:
-  - npm install -g npm@latest
