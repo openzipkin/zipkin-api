@@ -19,29 +19,26 @@
 const Sway = require('sway');
 const read = require('fs').readFileSync;
 const load = require('js-yaml').load;
-const yamls = ['./zipkin-api.yaml', './zipkin2-api.yaml'];
 
-yamls.forEach(yaml => {
+function validateSwagger(yaml, validationCallback) {
   const zipkinAPI = read(yaml).toString();
-
   Sway.create({definition: load(zipkinAPI)}).then(api => {
-    const result = api.validate();
+    validationCallback(api.validate());
+  });
+}
 
-    if (result.errors.length) {
-      console.error(`Validation failed for ${yaml}`)
-      console.error(JSON.stringify(result.errors));
-      return;
-    }
+describe('Zipkin Http Api', () => {
+  it('/api/v1 yaml should have no swagger syntax errors', done => {
+    validateSwagger('./zipkin-api.yaml', result => {
+      expect(result.errors).toHaveLength(0);
+      done();
+    });
+  });
 
-    if (result.warnings.length) {
-      console.warn(`Warnings in ${yaml}:`)
-      console.warn(JSON.stringify(result.warnings));
-    }
-
-    console.log(`Validation of ${yaml} passed`);
-  })
-  .catch(error=> {
-    console.error(`Error loading ${yaml}`);
-    console.error(error);
+  it('/api/v1 yaml should have no swagger syntax errors', done => {
+    validateSwagger('./zipkin2-api.yaml', result => {
+      expect(result.errors).toHaveLength(0);
+      done();
+    });
   });
 });
