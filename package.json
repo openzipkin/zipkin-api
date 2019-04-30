@@ -23,6 +23,7 @@
   "devDependencies": {
     "jest": "^24.7.1",
     "js-yaml": "^3.13.1",
+    "protobufjs": "^6.8.8",
     "sway": "^2.0.6"
   }
 }
