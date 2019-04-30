@@ -2,12 +2,6 @@
 
 cache:
   directories:
-  - $HOME/.m2
+  - $HOME/.npm
 
-language: java
-
-jdk: oraclejdk8
-
-# Override default travis to use the maven wrapper
-install: ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-script: ./mvnw clean test -B
+language: node_js
