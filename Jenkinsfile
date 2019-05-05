@@ -22,7 +22,6 @@ pipeline {
 
     tools {
         jdk 'JDK 1.8 (latest)'
-        nodejs "node"
     }
 
     options {
@@ -53,8 +52,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'npm install'
-                sh 'npm run test'
+                sh './mvnw test -B'
             }
         }
 
