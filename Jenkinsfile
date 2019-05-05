@@ -22,6 +22,7 @@ pipeline {
 
     tools {
         jdk 'JDK 1.8 (latest)'
+        nodejs "node"
     }
 
     options {
@@ -47,6 +48,13 @@ pipeline {
                 sh 'pwd'
                 sh 'ls'
                 sh 'git status'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'npm install'
+                sh 'npm run test'
             }
         }
 
