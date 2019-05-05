@@ -36,6 +36,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <main.basedir>${project.basedir}</main.basedir>
+    <frontend-maven-plugin.version>1.7.5</frontend-maven-plugin.version>
   </properties>
 
   <name>zipkin-proto3</name>
@@ -156,6 +157,7 @@
             <exclude>Jenkinsfile</exclude>
             <exclude>package.json</exclude>
             <exclude>**/*.md</exclude>
+            <exclude>**/node_modules/**</exclude>
           </excludes>
           <strictCheck>true</strictCheck>
         </configuration>
@@ -170,6 +172,43 @@
       </plugin>
 
       <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>${frontend-maven-plugin.version}</version>
+        <configuration>
+          <installDirectory>target</installDirectory>
+          <nodeVersion>v10.15.1</nodeVersion>
+        </configuration>
+        <executions>
+          <execution>
+            <id>install node and npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>npm install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm run test</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>test</phase>
+            <configuration>
+              <arguments>run test</arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+	  <plugin>
         <artifactId>maven-enforcer-plugin</artifactId>
         <version>3.0.0-M2</version>
         <executions>
@@ -221,6 +260,8 @@
 
             <!-- NPM files -->
             <exclude>**/package.json</exclude>
+            <exclude>**/package-lock.json</exclude>
+            <exclude>**/node_modules/**</exclude>
 
             <!-- Maven Wrapper generated files -->
             <exclude>.mvn/wrapper/maven-wrapper.properties</exclude>
