@@ -50,6 +50,12 @@ pipeline {
             }
         }
 
+        stage('Test') {
+            steps {
+                sh './mvnw test -B'
+            }
+        }
+
         stage('Publish snapshot') {
             when {
                 branch 'master'
