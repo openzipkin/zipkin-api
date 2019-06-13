@@ -1,14 +1,14 @@
 {
   "name": "zipkin-api",
   "version": "0.0.0",
-  "description": "Validate Apache Zipkin (Incubating) Api",
+  "description": "Validate Zipkin Api",
   "main": "validate.js",
   "scripts": {
     "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/apache/incubator-zipkin-api.git"
+    "url": "git+https://github.com/openzipkin/zipkin-api.git"
   },
   "keywords": [
     "zipkin",
@@ -17,9 +17,9 @@
   "author": "https://gitter.im/openzipkin/zipkin",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/apache/incubator-zipkin-api/issues"
+    "url": "https://github.com/openzipkin/zipkin-api/issues"
   },
-  "homepage": "https://github.com/apache/incubator-zipkin-api#readme",
+  "homepage": "https://github.com/openzipkin/zipkin-api#readme",
   "devDependencies": {
     "jest": "^24.7.1",
     "js-yaml": "^3.13.1",
