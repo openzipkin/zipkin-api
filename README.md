@@ -1,7 +1,5 @@
 # Zipkin API
 
-[![Build Status](https://travis-ci.org/apache/incubator-zipkin-api.svg?branch=master)](https://travis-ci.org/apache/incubator-zipkin-api)
-
 This repo includes an [OpenAPI Spec](./zipkin-api.yaml) and [Protocol Buffers interchange format](./zipkin.proto).
 
 ## Language independent interchange format for Zipkin transports
