@@ -25,9 +25,9 @@ message Span {
   // required 16 or 32 lower-hex characters
   string trace_id = 1;
   // optional 16 lower-hex characters
-  bytes parent_id = 2;
+  string parent_id = 2;
   // required 16 lower-hex characters
-  bytes id = 3;
+  string id = 3;
   // Only on remote spans. One of 'CLIENT' 'SERVER' 'PRODUCER' or 'CONSUMER'
   string kind = 4;
   // optional and lowercase; don't serialize empty
