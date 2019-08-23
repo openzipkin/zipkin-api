@@ -19,6 +19,12 @@ package zipkin.jsonv2;
 // json openapi/swagger because envoy has a policy of only generating
 // json from proto.
 //
+// Note: ListOfSpans is not included because it does not serialize as
+// a simple list. You will need to separately manage list encoding of
+// json, which is simple and has no special character concerns.
+//
+// Ex. Simply wrap in brackets and join on comma like: "[span1,span2]"
+//
 // The next id is 14.
 //
 message Span {
@@ -69,8 +75,4 @@ message Annotation {
   fixed64 timestamp = 1;
   // required utf-8; don't serialize empty
   string value = 2;
-}
-
-message ListOfSpans {
-  repeated Span spans = 1;
 }
