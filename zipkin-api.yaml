@@ -345,7 +345,7 @@ definitions:
         type: string
         maxLength: 32
         minLength: 16
-        pattern: "[a-z0-9]{16,32}"
+        pattern: "[a-f0-9]{16,32}"
         description: |
                     Randomly generated, unique identifier for a trace, set on all spans within it.
                     
@@ -362,7 +362,7 @@ definitions:
                     For example, do not embed variables into the name.
       parentId:
         type: string
-        pattern: "[a-z0-9]{16}"
+        pattern: "[a-f0-9]{16}"
         maxLength: 16
         minLength: 16
         description: 'The parent span ID or absent if this the root span in a trace.'
@@ -370,7 +370,7 @@ definitions:
         type: string
         maxLength: 16
         minLength: 16
-        pattern: "[a-z0-9]{16}"
+        pattern: "[a-f0-9]{16}"
         description: |
                     Unique 64bit identifier for this operation within the trace.
                     
