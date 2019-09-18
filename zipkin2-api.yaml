@@ -172,6 +172,34 @@ paths:
             $ref: "#/definitions/Trace"
         '404':
           description: "`traceId` not found"
+  /traceMulti:
+    get:
+      description: |
+          Invoking this request retrieves any traces with the specified IDs.
+
+          Results return in any order, and can be empty.
+
+          Use /trace/{traceId} to request a single trace ID: <2 trace IDs is a
+          bad request.
+      parameters:
+        - name: traceIds
+          in: query
+          type: string
+          minLength: 33
+          pattern: "([a-f0-9]{16,32},)+([a-f0-9]{16,32})"
+          required: true
+          description: |
+                      Comma delimited list of at least two trace identifiers.
+
+                      Encoded as 16 or 32 lowercase hex characters corresponding to 64 or 128 bits.
+                      For example, a 128bit trace ID looks like 4e441824ec2b6a44ffdc9bb9a6453df3
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: "#/definitions/ListOfTraces"
+        '400':
+          description: Bad Request Error
   /dependencies:
     get:
       description: |
