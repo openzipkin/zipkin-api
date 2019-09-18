@@ -30,7 +30,7 @@ describe('Zipkin Http Api', () => {
     });
   });
 
-  it('/api/v1 yaml should have no swagger syntax errors', done => {
+  it('/api/v2 yaml should have no swagger syntax errors', done => {
     validateSwagger('./zipkin2-api.yaml', result => {
       expect(result.errors).toHaveLength(0);
       done();
