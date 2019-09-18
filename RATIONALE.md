@@ -14,6 +14,24 @@ There were several design concerns to address when integrating another feature
 into an existing api root. Most of these dealt with how to inform consumers that
 the feature exists.
 
+### Why not just use http cache control on /trace/{traceId}?
+It is a reasonable question why not just introduce a caching layer on trace ID,
+and have callers make successive requests. There are a number of problems with
+this. First, it would only help if cache-control headers were sent, but they
+have never been sent. This is because results of a trace are unstable until
+complete. Also, only use cases that revisit the same trace IDs are aided with
+caching, for example trace comparison views. It will always cost more to prime
+the cache with multiple requests vs one.
+
+Finally, bear in mind not all use cases revisit the same trace IDs, or even
+support http cache control. For example, if someone were paging over all traces
+to perform an aggregation, those reads only happen once. In this case, the value
+of efficiently getting a bucket of results is foreground.
+
+### Why not just have this an internal detail of storage?
+As time goes by, we've accumulated more use cases of multi-get. When there are
+more than 3 integrations, we typically consider normalizing a feature.
+
 ### Why /traceMulti instead of /trace/id,id2
 A separate endpoint than /trace/ allows us to help consumers, such as the UI,
 know the difference between unsupported (404) and empty (200 with empty list
