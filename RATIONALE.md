@@ -1,7 +1,7 @@
 # Rationale for api designs
 
-## Get multiple traces: /api/v2/traceMulti?traceIds=id1,id2
-Get by multiple trace IDs was added in [/api/v2](zipkin2-api.yaml) to support
+## Get many traces: /api/v2/traceMany?traceIds=id1,id2
+Get many traces was added in [/api/v2](zipkin2-api.yaml) to support
 more efficient requests when trace IDs are found by means besides the query api.
 
 Here are some use cases:
@@ -32,14 +32,14 @@ of efficiently getting a bucket of results is foreground.
 As time goes by, we've accumulated more use cases of multi-get. When there are
 more than 3 integrations, we typically consider normalizing a feature.
 
-### Why /traceMulti instead of /trace/id,id2
+### Why /traceMany instead of /trace/id,id2
 A separate endpoint than /trace/ allows us to help consumers, such as the UI,
 know the difference between unsupported (404) and empty (200 with empty list
 response). /trace/{traceId}, on the other hand, returns 404 on not found. This
 brings up a larger problems that a result of multiple traces is a list of
 traces, which is a different data type than a list of spans.
 
-### Why /traceMulti instead of /traces?traceIds=id1,id2
+### Why /traceMany instead of /traces?traceIds=id1,id2
 When search is disabled, `/trace/{traceId}` is still mounted, eventhough
 `/traces` is not. Multi-get is an optimization of `/trace/{traceId}`, so needs
 to be mounted when search-like mechanisms are disabled. It is still tempting to
@@ -50,8 +50,8 @@ For example, calling `/traces?traceIds=id1,id2` in an existing service is most
 likely to return as if there was no `traceIds` parameter at all, resulting in
 random results returned.
 
-### Why /traceMulti
-`/traceMulti` is most similar to `/trace/{traceId}` except for multiple IDs. It
+### Why /traceMany
+`/traceMany` is most similar to `/trace/{traceId}` except for multiple IDs. It
 has to be a different name to route properly. Other endpoints use lowerCamel
 case format.
 
