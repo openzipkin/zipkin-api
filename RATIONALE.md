@@ -53,7 +53,7 @@ random results returned.
 ### Why /traceMany
 `/traceMany` is most similar to `/trace/{traceId}` except for multiple IDs. It
 has to be a different name to route properly. Other endpoints use lowerCamel
-case format.
+case format, too.
 
 ### Why a single traceIds parameter instead of multiple query parameters?
 There are a lot of prior art on a single comma-separated query parameter. Using
@@ -67,3 +67,11 @@ more interesting question is why minimum 2 instead of 1. The most important
 reason is that tools should use the oldest route that can satisfy a request. If
 only passing a single ID, `/trace/{traceId}` is better. Moreover, that endpoint
 is more likely to be cached properly.
+
+### Why ListOfTraces instead of indexed?
+The `/traceMany` endpoint returns `ListOfTraces` of those which match the input
+traceIds vs other options such as index based. This is primarily to re-use
+parsers from the `/traces` endpoint. Also, by not mandating index order, this
+endpoint better reflects the scatter/gather nature of most implementations,
+avoiding an ordering stage. For example, implementations can choose to order,
+but also choose to write the response incrementally.

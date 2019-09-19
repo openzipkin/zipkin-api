@@ -189,17 +189,17 @@ paths:
           pattern: "([a-f0-9]{16,32},)+([a-f0-9]{16,32})"
           required: true
           description: |
-                      Comma delimited list of at least two trace identifiers.
+                      Comma delimited list of at least two unique trace identifiers.
 
                       Encoded as 16 or 32 lowercase hex characters corresponding to 64 or 128 bits.
                       For example, a 128bit trace ID looks like 4e441824ec2b6a44ffdc9bb9a6453df3
       responses:
         '200':
-          description: OK
+          description: OK. List of traces that match the input traceIds, empty if none match.
           schema:
             $ref: "#/definitions/ListOfTraces"
         '400':
-          description: Bad Request Error
+          description: Bad request. Less than two traceIds, or the list was redundant or malformed.
   /dependencies:
     get:
       description: |
