@@ -13,16 +13,42 @@
 # the License.
 #
 
+set -e
 set -x
 
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+CURRENT_BRANCH=$1
 GH_PAGES_BRANCH="gh-pages"
-git switch $GH_PAGES_BRANCH
-git restore -s master -- zipkin-api.yaml.js
-git restore -s master -- zipkin2-api.yaml.js
-git restore -s master -- zipkin.proto
 
-git commit -m "$1"
-git push origin $GH_PAGES_BRANCH
+# Keep track of where Travis put us.
+# We are on a detached head, and we need to be able to go back to it.
+BUILD_HEAD=$(git rev-parse HEAD)
 
-git checkout $CURRENT_BRANCH
+# Fetch all the remote branches. Travis clones with `--depth`, which
+# implies `--single-branch`, so we need to overwrite remote.origin.fetch to
+# do that.
+git config --replace-all remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
+git fetch
+# optionally, we can also fetch the tags
+git fetch --tags
+
+git checkout -qf $GH_PAGES_BRANCH
+
+# finally, go back to where we were at the beginning
+
+git checkout $CURRENT_BRANCH zipkin-api.yaml
+git add zipkin-api.yaml
+git checkout $CURRENT_BRANCH zipkin2-api.yaml
+git add zipkin2-api.yaml
+git checkout $CURRENT_BRANCH zipkin.proto
+git add zipkin.proto
+
+FILES_TO_BE_COMMITED=$(git status -s)
+if [ ! -z "$FILES_TO_BE_COMMITED" ]; then
+    git commit -m "$2"
+
+    echo "Pushing to $GH_PAGES_BRANCH"
+    git push origin $GH_PAGES_BRANCH
+fi
+
+echo "Back to HEAD"
+git checkout ${BUILD_HEAD}
