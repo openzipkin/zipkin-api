@@ -33,8 +33,7 @@ git fetch --tags
 
 git checkout -qf $GH_PAGES_BRANCH
 
-# finally, go back to where we were at the beginning
-
+# TODO: these files can be in a list for convenience.
 git checkout $CURRENT_BRANCH zipkin-api.yaml
 git add zipkin-api.yaml
 git checkout $CURRENT_BRANCH zipkin2-api.yaml

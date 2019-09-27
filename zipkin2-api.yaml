@@ -17,7 +17,7 @@ info:
   version: "2"
   title: Zipkin API
   description: |
-    Zipkin's v2 api currently includes a POST endpoint that can receive spans.
+    Zipkin's v2 API currently includes a POST endpoint that can receive spans.
 host: localhost:9411
 basePath: /api/v2
 schemes:
