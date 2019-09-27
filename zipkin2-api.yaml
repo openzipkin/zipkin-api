@@ -1,6 +1,20 @@
+#
+# Copyright 2018-2019 The OpenZipkin Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+# in compliance with the License. You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License
+# is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+# or implied. See the License for the specific language governing permissions and limitations under
+# the License.
+#
+
 swagger: "2.0"
 info:
-  version: "1.0.0"
+  version: "2"
   title: Zipkin API
   description: |
     Zipkin's v2 api currently includes a POST endpoint that can receive spans.
@@ -18,7 +32,7 @@ paths:
         Returns a list of all service names associated with span endpoints.
       responses:
         '200':
-          description: Succes
+          description: OK
           schema:
             type: array
             items:
@@ -40,21 +54,18 @@ paths:
         '200':
           description: OK
           schema:
-            type: array
-            items:
-              type: string
+            $ref: "#/definitions/ListOfSpans"
         '400':
-          description: Bad Request Error  
+          description: Bad Request Error
     post:
-      description: |
-          Uploads a list of spans encoded per content-type, for example json.
+      summary: |
+        Uploads a list of spans encoded per content-type, for example json.
       consumes:
         - application/json
         - application/x-protobuf
-      produces: []
       parameters:
-        - name: spans
-          in: body
+        - in: body
+          name: spans
           description: A list of spans that belong to any trace.
           required: true
           schema:
@@ -148,10 +159,10 @@ paths:
           type: string
           maxLength: 32
           minLength: 16
-          pattern: "[a-z0-9]{16,32}"
+          pattern: "[a-f0-9]{16,32}"
           description: |
                       Trace identifier, set on all spans within it.
-                      
+
                       Encoded as 16 or 32 lowercase hex characters corresponding to 64 or 128 bits.
                       For example, a 128bit trace ID looks like 4e441824ec2b6a44ffdc9bb9a6453df3
       responses:
@@ -161,6 +172,34 @@ paths:
             $ref: "#/definitions/Trace"
         '404':
           description: "`traceId` not found"
+  /traceMany:
+    get:
+      description: |
+          Invoking this request retrieves any traces with the specified IDs.
+
+          Results return in any order, and can be empty.
+
+          Use /trace/{traceId} to request a single trace ID: <2 trace IDs is a
+          bad request.
+      parameters:
+        - name: traceIds
+          in: query
+          type: string
+          minLength: 33
+          pattern: "([a-f0-9]{16,32},)+([a-f0-9]{16,32})"
+          required: true
+          description: |
+                      Comma delimited list of at least two unique trace identifiers.
+
+                      Encoded as 16 or 32 lowercase hex characters corresponding to 64 or 128 bits.
+                      For example, a 128bit trace ID looks like 4e441824ec2b6a44ffdc9bb9a6453df3
+      responses:
+        '200':
+          description: OK. List of traces that match the input traceIds, empty if none match.
+          schema:
+            $ref: "#/definitions/ListOfTraces"
+        '400':
+          description: Bad request. Less than two traceIds, or the list was redundant or malformed.
   /dependencies:
     get:
       description: |
@@ -190,6 +229,46 @@ paths:
             title: ListOfDependencyLinks
             items:
               $ref: "#/definitions/DependencyLink"
+  /autocompleteKeys:
+    get:
+      description: |
+        Returns a subset of keys from Span.tags configured for value autocompletion.
+        This helps sites populate common keys into the annotationQuery parameter of the
+        /traces endpoint. For example, a UI can allow users to select site-specific
+        keys from a drop-down as opposed to typing them in manually. This helps guide
+        users towards the more correct keys and avoids typos or formatting problems.
+      responses:
+        '200':
+          description: Success is a list of site-specific keys, such as environment.
+          schema:
+            type: array
+            items:
+              type: string
+        '400':
+          description: Bad Request Error
+  /autocompleteValues:
+    get:
+      description: |
+        Returns all known values of Span.tags for the given autocomplete key. Refer
+        to the description of /autocompleteKeys for the use case.
+      parameters:
+      - name: key
+        in: query
+        required: true
+        description: Name of the autocomplete key from the /autocompleteKeys endpoint.
+        type: string
+      responses:
+        '200':
+          description: |
+            Success result is empty when there are no values or the key was not
+            configured.
+          schema:
+            type: array
+            items:
+              type: string
+        '400':
+          description: Bad Request Error
+
 definitions:
   Endpoint:
     type: object
@@ -201,7 +280,7 @@ definitions:
         description: |
                     Lower-case label of this node in the service graph, such as "favstar". Leave
                     absent if unknown.
-                    
+
                     This is a primary label for trace lookup and aggregation, so it should be
                     intuitive and consistent. Many use a name from service discovery.
       ipv4:
@@ -216,7 +295,7 @@ definitions:
         description: |
                     The text representation of the primary IPv6 address associated with a
                     connection. Ex. 2001:db8::c001 Absent if unknown.
-                    
+
                     Prefer using the ipv4 field for mapped addresses.
       port:
         type: integer
@@ -229,7 +308,7 @@ definitions:
     description: |
                 Associates an event that explains latency with a timestamp.
                 Unlike log statements, annotations are often codes. Ex. "ws" for WireSend
-                
+
                 Zipkin v1 core annotations such as "cs" and "sr" have been replaced with
                 Span.Kind, which interprets timestamp and duration.
     required:
@@ -240,16 +319,16 @@ definitions:
         type: integer
         description: |
                     Epoch **microseconds** of this event.
-                    
+
                     For example, 1502787600000000 corresponds to 2017-08-15 09:00 UTC
-                    
+
                     This value should be set directly by instrumentation, using the most precise
                     value possible. For example, gettimeofday or multiplying epoch millis by 1000.
       value:
         type: string
         description: |
                   Usually a short tag indicating an event, like "error"
-                  
+
                   While possible to add larger data, such as garbage collection details, low
                   cardinality event names both keep the size of spans down and also are easy
                   to search against.
@@ -258,7 +337,7 @@ definitions:
     title: Tags
     description: |
                 Adds context to a span, for search, viewing and analysis.
-                
+
                 For example, a key "your_app.version" would let you lookup traces by version.
                 A tag "sql.query" isn't searchable, but it can help in debugging when viewing
                 a trace.
@@ -280,7 +359,7 @@ definitions:
     title: ListOfTraces
     type: array
     items:
-      $ref: "#/definitions/Trace"      
+      $ref: "#/definitions/Trace"
   Span:
     title: Span
     description: |
@@ -288,11 +367,11 @@ definitions:
                 (often RPC calls) which nest to form a latency tree. Spans are in the same
                 trace when they share the same trace ID. The parent_id field establishes the
                 position of one span in the tree.
-                 
+
                 The root span is where parent_id is Absent and usually has the longest
                 duration in the trace. However, nested asynchronous work can materialize as
                 child spans whose duration exceed the root span.
-                 
+
                 Spans usually represent remote activity such as RPC calls, or messaging
                 producers and consumers. However, they can also represent in-process
                 activity in any position of the trace. For example, a root span could
@@ -307,10 +386,10 @@ definitions:
         type: string
         maxLength: 32
         minLength: 16
-        pattern: "[a-z0-9]{16,32}"
+        pattern: "[a-f0-9]{16,32}"
         description: |
                     Randomly generated, unique identifier for a trace, set on all spans within it.
-                    
+
                     Encoded as 16 or 32 lowercase hex characters corresponding to 64 or 128 bits.
                     For example, a 128bit trace ID looks like 4e441824ec2b6a44ffdc9bb9a6453df3
       name:
@@ -318,23 +397,23 @@ definitions:
         description: |
                     The logical operation this span represents in lowercase (e.g. rpc method).
                     Leave absent if unknown.
-                    
+
                     As these are lookup labels, take care to ensure names are low cardinality.
                     For example, do not embed variables into the name.
       parentId:
         type: string
-        pattern: "[a-z0-9]{16}"
+        pattern: "[a-f0-9]{16}"
         maxLength: 16
         minLength: 16
         description: 'The parent span ID or absent if this the root span in a trace.'
       id:
         type: string
-        pattern: "[a-z0-9]{16}"
+        pattern: "[a-f0-9]{16}"
         maxLength: 16
         minLength: 16
         description: |
                     Unique 64bit identifier for this operation within the trace.
-                    
+
                     Encoded as 16 lowercase hex characters. For example ffdc9bb9a6453df3
       kind:
         type: string
@@ -348,7 +427,7 @@ definitions:
                     absent, the span is local or incomplete. Unlike client and server, there
                     is no direct critical path latency relationship between producer and
                     consumer spans.
-                    
+
                     * `CLIENT`
                       * timestamp is the moment a request was sent to the server. (in v1 "cs")
                       * duration is the delay until a response or an error was received. (in v1 "cr"-"cs")
@@ -356,7 +435,7 @@ definitions:
                     * `SERVER`
                       * timestamp is the moment a client request was received. (in v1 "sr")
                       * duration is the delay until a response was sent or an error. (in v1 "ss"-"sr")
-                      * remote_endpoint is the client. (in v1 "ca")
+                      * remoteEndpoint is the client. (in v1 "ca")
                     * `PRODUCER`
                       * timestamp is the moment a message was sent to a destination. (in v1  "ms")
                       * duration is the delay sending the message, such as batching.
@@ -371,13 +450,13 @@ definitions:
         description: |
                     Epoch microseconds of the start of this span, possibly absent if
                     incomplete.
-                    
+
                     For example, 1502787600000000 corresponds to 2017-08-15 09:00 UTC
-                    
+
                     This value should be set directly by instrumentation, using the most
                     precise value possible. For example, gettimeofday or multiplying epoch
                     millis by 1000.
-                    
+
                     There are three known edge-cases where this could be reported absent.
                      * A span was allocated but never started (ex not yet received a timestamp)
                      * The span's start event was lost
@@ -390,13 +469,13 @@ definitions:
                     Duration in **microseconds** of the critical path, if known. Durations of less
                     than one are rounded up. Duration of children can be longer than their
                     parents due to asynchronous operations.
-                    
+
                     For example 150 milliseconds is 150000 microseconds.
       debug:
         type: boolean
         description: |
                     True is a request to store this span even if it overrides sampling policy.
-                    
+
                     This is true when the `X-B3-Flags` header has a value of 1.
       shared:
         type: boolean
@@ -405,7 +484,7 @@ definitions:
         $ref: "#/definitions/Endpoint"
         description: |
                     The host that recorded this span, primarily for query by service name.
-                    
+
                     Instrumentation should always record this. Usually, absent implies late
                     data. The IP address corresponding to this is usually the site local or
                     advertised service address. When present, the port indicates the listen
@@ -415,7 +494,7 @@ definitions:
         description: |
                     When an RPC (or messaging) span, indicates the other side of the
                     connection.
-                    
+
                     By recording the remote endpoint, your trace will contain network context
                     even if the peer is not tracing. For example, you can record the IP from
                     the `X-Forwarded-For` header or the service name and socket of a remote
@@ -429,6 +508,24 @@ definitions:
       tags:
         $ref: '#/definitions/Tags'
         description: 'Tags give your span context for search, viewing and analysis.'
+    example:
+      id: "352bff9a74ca9ad2"
+      traceId: "5af7183fb1d4cf5f"
+      parentId: "6b221d5bc9e6496c"
+      name: "get /api"
+      timestamp: 1556604172355737
+      duration: 1431
+      kind: "SERVER"
+      localEndpoint:
+        serviceName: "backend"
+        ipv4: "192.168.99.1"
+        port: 3306
+      remoteEndpoint:
+        ipv4: "172.19.0.2"
+        port: 58648
+      tags:
+        http.method: "GET"
+        http.path: "/api"
   DependencyLink:
     title: DependencyLink
     description: |

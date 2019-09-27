@@ -1,3 +1,17 @@
+#
+# Copyright 2018-2019 The OpenZipkin Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+# in compliance with the License. You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License
+# is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+# or implied. See the License for the specific language governing permissions and limitations under
+# the License.
+#
+
 swagger: "2.0"
 info:
   version: "1.0.0"
@@ -151,8 +165,15 @@ paths:
         - name: traceId
           in: path
           required: true
-          description: the 64 or 128-bit hex-encoded id of the trace as a path parameter.
           type: string
+          maxLength: 32
+          minLength: 16
+          pattern: "[a-f0-9]{16,32}"
+          description: |
+                      Trace identifier, set on all spans within it.
+
+                      Encoded as 16 or 32 lowercase hex characters corresponding to 64 or 128 bits.
+                      For example, a 128bit trace ID looks like 4e441824ec2b6a44ffdc9bb9a6453df3
         - name: raw
           in: query
           required: false
@@ -331,11 +352,12 @@ definitions:
         type: string
         maxLength: 32
         minLength: 16
-        pattern: "[a-z0-9]{16,32}"
+        pattern: "[a-f0-9]{16,32}"
         description: |
                     Randomly generated, unique identifier for a trace, set on all spans within it.
                     
-                    Encoded as 16 or 32 lowercase hex characters corresponding to 64 or 128 bits.
+                    Encoded as 16 or 32 lowercase hex characters in big endian byte order,
+                    corresponding to 64 or 128 bits,
                     For example, a 128bit trace ID looks like 4e441824ec2b6a44ffdc9bb9a6453df3
       name:
         type: string
@@ -347,7 +369,7 @@ definitions:
                     For example, do not embed variables into the name.
       parentId:
         type: string
-        pattern: "[a-z0-9]{16}"
+        pattern: "[a-f0-9]{16}"
         maxLength: 16
         minLength: 16
         description: 'The parent span ID or absent if this the root span in a trace.'
@@ -355,7 +377,7 @@ definitions:
         type: string
         maxLength: 16
         minLength: 16
-        pattern: "[a-z0-9]{16}"
+        pattern: "[a-f0-9]{16}"
         description: |
                     Unique 64bit identifier for this operation within the trace.
                     
