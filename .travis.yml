@@ -22,7 +22,7 @@ script: ./travis/publish.sh
 
 deploy:
   - provider: script
-    script: TRAVIS_COMMIT_MESSAGE=$TRAVIS_COMMIT_MESSAGE bash travis/deploy.sh
+    script: bash travis/deploy.sh $TRAVIS_COMMIT_MESSAGE
     on:
       branch: master
 

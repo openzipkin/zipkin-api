@@ -22,7 +22,7 @@ git restore -s master -- zipkin-api.yaml.js
 git restore -s master -- zipkin2-api.yaml.js
 git restore -s master -- zipkin.proto
 
-git commit -m "$TRAVIS_COMMIT_MESSAGE"
+git commit -m "$1"
 git push origin $GH_PAGES_BRANCH
 
 git checkout $CURRENT_BRANCH
