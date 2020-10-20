@@ -1,4 +1,23 @@
-# Rationale for api designs
+# Rationale for data model
+
+## Why epoch micros for timestamp?
+Zipkin timestamp is epoch micros since the beginning. While staying consistent is
+its own goal, the choice of epoch micros serves two purposes:
+
+ * Represents the highest usual accuracy of a system clock
+ * Using the maximum safe integer in JSON (2^53 - 1), epoch micros lasts until 2255-06-05 UTC
+
+Epoch nanos meets neither of these, so switching to it would not only break
+compatability, but also not usually increase accuracy and likely cause data
+conversion errors.
+
+## Why micros for duration?
+It is true that often duration can be measured in nanoseconds resolution. However,
+Mixing units between timestamp and duration makes for little bugs. It also forces
+conversion steps when people do query-based operations between timestamp and
+duration.
+
+# Rationale for API
 
 ## Get many traces: /api/v2/traceMany?traceIds=id1,id2
 Get many traces was added in [/api/v2](zipkin2-api.yaml) to support
