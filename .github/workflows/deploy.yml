@@ -51,4 +51,5 @@ jobs:
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
         run: |  # GITHUB_REF will be refs/heads/master or refs/tags/N.M.L
           build-bin/configure_deploy &&
+          build-bin/git/login_git &&
           build-bin/deploy $(echo ${GITHUB_REF} | cut -d/ -f 3)
