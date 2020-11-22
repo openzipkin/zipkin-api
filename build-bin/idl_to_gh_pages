@@ -14,9 +14,6 @@
 #
 
 set -ue
-# Keep track of where CI put us.
-# We are on a detached head, and we need to be able to go back to it.
-build_head=$(git rev-parse HEAD)
 
 # Update gh-pages
 git fetch origin gh-pages:gh-pages
@@ -39,5 +36,5 @@ if [ ! -z "${files_to_commit}" ]; then
     git push origin gh-pages
 fi
 
-# back to head
-git checkout ${build_head}
+# back to master
+git checkout master
