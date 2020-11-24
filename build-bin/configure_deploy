@@ -8,3 +8,6 @@ set -ue
 
 build-bin/maven/maven_go_offline
 build-bin/gpg/configure_gpg
+
+# openzipkin/zipkin-api publishes gh-pages on commit
+build-bin/git/login_git
