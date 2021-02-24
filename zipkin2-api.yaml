@@ -317,6 +317,7 @@ definitions:
     properties:
       timestamp:
         type: integer
+        format: int64
         description: |
                     Epoch **microseconds** of this event.
 
