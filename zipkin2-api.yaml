@@ -115,12 +115,14 @@ paths:
         - name: minDuration
           in: query
           type: integer
+          format: int64
           description: |
              Ex. 100000 (for 100ms). Only return traces whose `Span.duration` is
              greater than or equal to minDuration microseconds.
         - name: maxDuration
           in: query
           type: integer
+          format: int64
           description: |
             Only return traces whose Span.duration is less than or equal to
             `maxDuration` microseconds. Only valid with minDuration.
