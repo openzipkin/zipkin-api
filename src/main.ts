@@ -9,7 +9,6 @@ import SwaggerUIStandalonePreset from 'swagger-ui/dist/swagger-ui-standalone-pre
 window.onload = function() {
     // Begin Swagger UI call region
     // End Swagger UI call region
-    // @ts-ignore
     SwaggerUIBundle({
         url: "https://zipkin.io/zipkin-api/zipkin2-api.yaml",
         dom_id: '#app',
