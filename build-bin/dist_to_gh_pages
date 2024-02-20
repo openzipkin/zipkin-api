@@ -1,0 +1,63 @@
+#!/bin/sh
+#
+# Copyright 2018-2020 The OpenZipkin Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+# in compliance with the License. You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License
+# is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+# or implied. See the License for the specific language governing permissions and limitations under
+# the License.
+#
+
+set -ue
+
+ORIGIN_BRANCH='master'
+TARGET_BRANCH='gh-pages'
+
+# Update gh-pages
+git fetch origin $TARGET_BRANCH:$TARGET_BRANCH
+git checkout $TARGET_BRANCH
+
+
+
+git checkout -qf $TARGET_BRANCH
+
+# Remove everything except .git
+rm -rf *
+
+git checkout $ORIGIN_BRANCH docs
+
+things_to_copy='zipkin-api.yaml zipkin2-api.yaml zipkin.proto'
+
+# Iterate over the list
+for item in $things_to_copy
+do
+  git checkout $ORIGIN_BRANCH "$item"
+  rm -rf ./docs/public/"$item" || true
+  mv "./$item" ./docs/public/"$item"
+  git add ./docs/public/"$item"
+done
+
+
+cd docs
+pnpm i
+pnpm run build
+
+cp -r ./dist/* ../
+cd ..
+rm -rf ./docs
+
+files_to_commit=$(git status -s)
+if [ ! -z "${files_to_commit}" ]; then
+    git add --all
+    git commit -m "Automatically updated dist"
+    echo "Pushing ${files_to_commit} to $TARGET_BRANCH"
+    git push origin $TARGET_BRANCH
+fi
+
+# back to master
+git checkout $ORIGIN_BRANCH
