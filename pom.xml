@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2018-2020 The OpenZipkin Authors
+    Copyright 2018-2024 The OpenZipkin Authors
 
     Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
     in compliance with the License. You may obtain a copy of the License at
@@ -36,10 +36,11 @@
 
     <!-- Update occasionally based on LTS, but don't overrun what's in Alpine:
          https://pkgs.alpinelinux.org/packages?name=nodejs-current -->
-    <node.version>14.14.0</node.version>
+    <node.version>21.6.2</node.version>
+    <pnpm.version>8.15.3</pnpm.version>
     <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
 
-    <frontend-maven-plugin.version>1.7.6</frontend-maven-plugin.version>
+    <frontend-maven-plugin.version>1.15.0</frontend-maven-plugin.version>
     <go-offline-maven-plugin.version>1.2.7</go-offline-maven-plugin.version>
     <!-- TODO: cleanup any redundant ignores now also in the 4.0 release (once final) -->
     <license-maven-plugin.version>4.0.rc2</license-maven-plugin.version>
@@ -183,10 +184,9 @@
         <configuration>
           <installDirectory>target</installDirectory>
           <nodeVersion>v${node.version}</nodeVersion>
+          <pnpmVersion>${pnpm.version}</pnpmVersion>
+          <workingDirectory>./site</workingDirectory>
           <environmentVariables>
-            <!--
-            create-react-app runs tests in watch mode unless this is defined. We define it here for running Maven locally.
-            -->
             <CI>true</CI>
           </environmentVariables>
         </configuration>
@@ -194,22 +194,22 @@
           <execution>
             <id>install node and npm</id>
             <goals>
-              <goal>install-node-and-npm</goal>
+              <goal>install-node-and-pnpm</goal>
             </goals>
           </execution>
           <execution>
-            <id>npm install</id>
+            <id>pnpm install</id>
             <goals>
-              <goal>npm</goal>
+              <goal>pnpm</goal>
             </goals>
             <configuration>
               <arguments>install</arguments>
             </configuration>
           </execution>
           <execution>
-            <id>npm run test</id>
+            <id>pnpm run test</id>
             <goals>
-              <goal>npm</goal>
+              <goal>pnpm</goal>
             </goals>
             <phase>test</phase>
             <configuration>
@@ -242,6 +242,8 @@
             <maven_release>SCRIPT_STYLE</maven_release>
           </mapping>
           <excludes>
+            <exclude>site/dist/**</exclude>
+            <exclude>**/pnpm-lock.yaml/**</exclude>
             <exclude>.gitignore</exclude>
             <exclude>.gitattributes</exclude>
             <exclude>.mvn/**</exclude>
