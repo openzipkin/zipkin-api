@@ -22,15 +22,19 @@ export default defineConfig({
         viteStaticCopy({
             targets: [
                 {
-                    src: normalizePath(resolve(__dirname, '../zipkin-api.yaml')),
+                    src: normalizePath(resolve(__dirname, './zipkin-api.yaml')),
                     dest: '',
                 },
                 {
-                    src: normalizePath(resolve(__dirname, '../zipkin.proto')),
+                    src: normalizePath(resolve(__dirname, './thrift')),
+                    dest: './',
+                },
+                {
+                    src: normalizePath(resolve(__dirname, './zipkin.proto')),
                     dest: '',
                 },
                 {
-                    src: normalizePath(resolve(__dirname, '../zipkin2-api.yaml')),
+                    src: normalizePath(resolve(__dirname, './zipkin2-api.yaml')),
                     dest: '',
                 },
             ],

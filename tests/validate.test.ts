@@ -42,13 +42,13 @@ describe('Zipkin Http Api', () => {
   }
 
   it('/api/v1 yaml should have no swagger syntax errors', () => {
-    validateSwagger('../zipkin-api.yaml', result => {
+    validateSwagger('zipkin-api.yaml', (result: { errors: any; }) => {
       expect(result.errors).toHaveLength(0);
     });
   });
 
   it('/api/v2 yaml should have no swagger syntax errors', () => {
-    validateSwagger('../zipkin2-api.yaml', result => {
+    validateSwagger('zipkin2-api.yaml', (result: { errors: any; }) => {
       expect(result.errors).toHaveLength(0);
     });
   });
@@ -63,8 +63,8 @@ describe('Zipkin Protocol Buffers Api', () => {
     });
   }
 
-  it('should include core data structures', done => {
-    validateProto('../zipkin.proto', root => {
+  it('should include core data structures', () => {
+    validateProto('zipkin.proto', (root:any) => {
       expect(root.lookupType("zipkin.proto3.Endpoint")).toBeDefined();
       expect(root.lookupType("zipkin.proto3.Annotation")).toBeDefined();
       expect(root.lookupType("zipkin.proto3.Span")).toBeDefined();
@@ -73,7 +73,7 @@ describe('Zipkin Protocol Buffers Api', () => {
   });
 
   it('should include reporting service', () => {
-    validateProto('../zipkin.proto', root => {
+    validateProto('zipkin.proto', (root:any) => {
       // lookup is different for services vs messages
       expect(root.lookup("SpanService")).toBeDefined();
       expect(root.lookupType("zipkin.proto3.ReportResponse")).toBeDefined();

@@ -185,7 +185,7 @@
           <installDirectory>target</installDirectory>
           <nodeVersion>v${node.version}</nodeVersion>
           <pnpmVersion>${pnpm.version}</pnpmVersion>
-          <workingDirectory>./site</workingDirectory>
+          <workingDirectory>.</workingDirectory>
           <environmentVariables>
             <CI>true</CI>
           </environmentVariables>
@@ -242,7 +242,7 @@
             <maven_release>SCRIPT_STYLE</maven_release>
           </mapping>
           <excludes>
-            <exclude>site/dist/**</exclude>
+            <exclude>dist/**</exclude>
             <exclude>**/pnpm-lock.yaml/**</exclude>
             <exclude>.gitignore</exclude>
             <exclude>.gitattributes</exclude>
